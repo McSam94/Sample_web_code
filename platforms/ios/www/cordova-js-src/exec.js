@@ -17,7 +17,7 @@
  * specific language governing permissions and limitations
  * under the License.
  *
-*/
+ */
 
 /* global require, module, atob, document */
 
@@ -33,7 +33,7 @@ var commandQueue = []; // Contains pending JS->Native messages.
 var isInContextOfEvalJs = 0;
 var failSafeTimerId = 0;
 
-function massageArgsJsToNative (args) {
+function massageArgsJsToNative(args) {
     if (!args || utils.typeName(args) !== 'Array') {
         return args;
     }
@@ -41,8 +41,8 @@ function massageArgsJsToNative (args) {
     args.forEach(function (arg, i) {
         if (utils.typeName(arg) === 'ArrayBuffer') {
             ret.push({
-                'CDVType': 'ArrayBuffer',
-                'data': base64.fromArrayBuffer(arg)
+                CDVType: 'ArrayBuffer',
+                data: base64.fromArrayBuffer(arg),
             });
         } else {
             ret.push(arg);
@@ -51,7 +51,7 @@ function massageArgsJsToNative (args) {
     return ret;
 }
 
-function massageMessageNativeToJs (message) {
+function massageMessageNativeToJs(message) {
     if (message.CDVType === 'ArrayBuffer') {
         var stringToArrayBuffer = function (str) {
             var ret = new Uint8Array(str.length);
@@ -68,7 +68,7 @@ function massageMessageNativeToJs (message) {
     return message;
 }
 
-function convertMessageToArgsNativeToJs (message) {
+function convertMessageToArgsNativeToJs(message) {
     var args = [];
     if (!message || !message.hasOwnProperty('CDVType')) {
         args.push(message);
@@ -82,8 +82,7 @@ function convertMessageToArgsNativeToJs (message) {
     return args;
 }
 
-function iOSExec () {
-
+function iOSExec() {
     var successCallback, failCallback, service, action, actionArgs;
     var callbackId = null;
     if (typeof arguments[0] !== 'string') {
@@ -100,8 +99,9 @@ function iOSExec () {
         // an invalid callbackId and passes it even if no callbacks were given.
         callbackId = 'INVALID';
     } else {
-        throw new Error('The old format of this exec call has been removed (deprecated since 2.1). Change to: ' +
-            'cordova.exec(null, null, \'Service\', \'action\', [ arg1, arg2 ]);'
+        throw new Error(
+            'The old format of this exec call has been removed (deprecated since 2.1). Change to: ' +
+                "cordova.exec(null, null, 'Service', 'action', [ arg1, arg2 ]);",
         );
     }
 
@@ -112,8 +112,7 @@ function iOSExec () {
     // arguments if given.
     if (successCallback || failCallback) {
         callbackId = service + cordova.callbackId++;
-        cordova.callbacks[callbackId] =
-            { success: successCallback, fail: failCallback };
+        cordova.callbacks[callbackId] = { success: successCallback, fail: failCallback };
     }
 
     actionArgs = massageArgsJsToNative(actionArgs);
@@ -135,16 +134,17 @@ function iOSExec () {
 }
 
 // CB-10530
-function proxyChanged () {
+function proxyChanged() {
     var cexec = cordovaExec();
 
-    return (execProxy !== cexec && // proxy objects are different
-            iOSExec !== cexec // proxy object is not the current iOSExec
+    return (
+        execProxy !== cexec && // proxy objects are different
+        iOSExec !== cexec // proxy object is not the current iOSExec
     );
 }
 
 // CB-10106
-function handleBridgeChange () {
+function handleBridgeChange() {
     if (proxyChanged()) {
         var commandString = commandQueue.shift();
         while (commandString) {
@@ -165,7 +165,7 @@ function handleBridgeChange () {
     return false;
 }
 
-function pokeNative () {
+function pokeNative() {
     // CB-5488 - Don't attempt to create iframe before document.body is available.
     if (!document.body) {
         setTimeout(pokeNative);
@@ -217,7 +217,7 @@ iOSExec.nativeCallback = function (callbackId, status, message, keepCallback, de
     return iOSExec.nativeEvalAndFetch(function () {
         var success = status === 0 || status === 1;
         var args = convertMessageToArgsNativeToJs(message);
-        function nc2 () {
+        function nc2() {
             cordova.callbackFromNative(callbackId, success, status, args, keepCallback);
         }
         setTimeout(nc2, 0);
@@ -237,13 +237,16 @@ iOSExec.nativeEvalAndFetch = function (func) {
 
 // Proxy the exec for bridge changes. See CB-10106
 
-function cordovaExec () {
+function cordovaExec() {
     var cexec = require('cordova/exec');
-    var cexec_valid = (typeof cexec.nativeFetchMessages === 'function') && (typeof cexec.nativeEvalAndFetch === 'function') && (typeof cexec.nativeCallback === 'function');
-    return (cexec_valid && execProxy !== cexec) ? cexec : iOSExec;
+    var cexec_valid =
+        typeof cexec.nativeFetchMessages === 'function' &&
+        typeof cexec.nativeEvalAndFetch === 'function' &&
+        typeof cexec.nativeCallback === 'function';
+    return cexec_valid && execProxy !== cexec ? cexec : iOSExec;
 }
 
-function execProxy () {
+function execProxy() {
     cordovaExec().apply(null, arguments);
 }
 

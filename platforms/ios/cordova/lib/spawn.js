@@ -32,7 +32,8 @@ var proc = require('child_process');
 module.exports = function (cmd, args, opt_cwd) {
     console.warn(
         'This function is deprecated, may be removed from a future release. ' +
-        "Use `require('cordova-common').superspawn` instead.");
+            "Use `require('cordova-common').superspawn` instead.",
+    );
     var d = Q.defer();
     try {
         var child = proc.spawn(cmd, args, { cwd: opt_cwd, stdio: 'inherit' });

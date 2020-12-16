@@ -28,14 +28,16 @@ PodsJson.LIBRARY = 'libraries';
 PodsJson.SOURCE = 'sources';
 PodsJson.DECLARATION = 'declarations';
 
-function PodsJson (podsJsonPath) {
+function PodsJson(podsJsonPath) {
     this.path = podsJsonPath;
     this.contents = null;
     this.__dirty = false;
 
     var filename = this.path.split(path.sep).pop();
     if (filename !== PodsJson.FILENAME) {
-        throw new CordovaError(util.format('PodsJson: The file at %s is not `%s`.', this.path, PodsJson.FILENAME));
+        throw new CordovaError(
+            util.format('PodsJson: The file at %s is not `%s`.', this.path, PodsJson.FILENAME),
+        );
     }
 
     if (!fs.existsSync(this.path)) {
@@ -54,9 +56,11 @@ function PodsJson (podsJsonPath) {
 
 PodsJson.prototype.__isOldFormat = function () {
     if (this.contents !== null) {
-        if (this.contents.declarations === undefined ||
+        if (
+            this.contents.declarations === undefined ||
             this.contents.sources === undefined ||
-            this.contents.libraries === undefined) {
+            this.contents.libraries === undefined
+        ) {
             return true;
         }
     }
@@ -68,7 +72,7 @@ PodsJson.prototype.__updateFormatIfNecessary = function () {
         this.contents = {
             declarations: {},
             sources: {},
-            libraries: this.contents
+            libraries: this.contents,
         };
         this.__dirty = true;
         events.emit('verbose', 'Update format of pods.json');
@@ -119,7 +123,7 @@ PodsJson.prototype.clear = function () {
     this.contents = {
         declarations: {},
         sources: {},
-        libraries: {}
+        libraries: {},
     };
     this.__dirty = true;
 };

@@ -6,8 +6,8 @@
     "scripts": {
         "build": "cordova build -- --webpackConfig webpack.config.js",
         "web": "webpack serve",
-        "ios": "cordova run ios -- --livereload",
-        "android": "cordova run android -- --livereload",
+        "ios": "cordova prepare ios && cordova run ios -- --livereload",
+        "android": "cordova prepare android && cordova run android -- --livereload",
         "lint": "eslint --fix .",
         "format": "prettier --write src/",
         "test": "echo \"Error: no test specified\" && exit 1"

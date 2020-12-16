@@ -17,7 +17,7 @@
  * specific language governing permissions and limitations
  * under the License.
  *
-*/
+ */
 
 // ------------------------------------------------------------------------------
 // The logger module exports the following properties/functions:
@@ -56,13 +56,7 @@ var originalConsole = console;
  * Logging levels
  */
 
-var Levels = [
-    'LOG',
-    'ERROR',
-    'WARN',
-    'INFO',
-    'DEBUG'
-];
+var Levels = ['LOG', 'ERROR', 'WARN', 'INFO', 'DEBUG'];
 
 /*
  * add the logging levels to the logger object and
@@ -154,7 +148,9 @@ logger.useLogger = function (value) {
  * Parameters passed after message are used applied to
  * the message with utils.format()
  */
-logger.log = function (message) { logWithArgs('LOG', arguments); };
+logger.log = function (message) {
+    logWithArgs('LOG', arguments);
+};
 
 /**
  * Logs a message at the ERROR level.
@@ -162,7 +158,9 @@ logger.log = function (message) { logWithArgs('LOG', arguments); };
  * Parameters passed after message are used applied to
  * the message with utils.format()
  */
-logger.error = function (message) { logWithArgs('ERROR', arguments); };
+logger.error = function (message) {
+    logWithArgs('ERROR', arguments);
+};
 
 /**
  * Logs a message at the WARN level.
@@ -170,7 +168,9 @@ logger.error = function (message) { logWithArgs('ERROR', arguments); };
  * Parameters passed after message are used applied to
  * the message with utils.format()
  */
-logger.warn = function (message) { logWithArgs('WARN', arguments); };
+logger.warn = function (message) {
+    logWithArgs('WARN', arguments);
+};
 
 /**
  * Logs a message at the INFO level.
@@ -178,7 +178,9 @@ logger.warn = function (message) { logWithArgs('WARN', arguments); };
  * Parameters passed after message are used applied to
  * the message with utils.format()
  */
-logger.info = function (message) { logWithArgs('INFO', arguments); };
+logger.info = function (message) {
+    logWithArgs('INFO', arguments);
+};
 
 /**
  * Logs a message at the DEBUG level.
@@ -186,17 +188,19 @@ logger.info = function (message) { logWithArgs('INFO', arguments); };
  * Parameters passed after message are used applied to
  * the message with utils.format()
  */
-logger.debug = function (message) { logWithArgs('DEBUG', arguments); };
+logger.debug = function (message) {
+    logWithArgs('DEBUG', arguments);
+};
 
 // log at the specified level with args
-function logWithArgs (level, args) {
+function logWithArgs(level, args) {
     args = [level].concat([].slice.call(args));
     logger.logLevel.apply(logger, args);
 }
 
 // return the correct formatString for an object
-function formatStringForMessage (message) {
-    return (typeof message === 'string') ? '' : '%o';
+function formatStringForMessage(message) {
+    return typeof message === 'string' ? '' : '%o';
 }
 
 /**
@@ -241,11 +245,21 @@ logger.logLevel = function (level /* , ... */) {
 
         // log to the console
         switch (level) {
-        case logger.LOG: originalConsole.log(message); break;
-        case logger.ERROR: originalConsole.log('ERROR: ' + message); break;
-        case logger.WARN: originalConsole.log('WARN: ' + message); break;
-        case logger.INFO: originalConsole.log('INFO: ' + message); break;
-        case logger.DEBUG: originalConsole.log('DEBUG: ' + message); break;
+            case logger.LOG:
+                originalConsole.log(message);
+                break;
+            case logger.ERROR:
+                originalConsole.log('ERROR: ' + message);
+                break;
+            case logger.WARN:
+                originalConsole.log('WARN: ' + message);
+                break;
+            case logger.INFO:
+                originalConsole.log('INFO: ' + message);
+                break;
+            case logger.DEBUG:
+                originalConsole.log('DEBUG: ' + message);
+                break;
         }
     }
 };
@@ -277,11 +291,13 @@ logger.format = function (formatString, args) {
  * Returns an array containing the formatted string and any remaining
  * arguments.
  */
-function __format (formatString, args) {
+function __format(formatString, args) {
     if (formatString === null || formatString === undefined) return [''];
     if (arguments.length === 1) return [formatString.toString()];
 
-    if (typeof formatString !== 'string') { formatString = formatString.toString(); }
+    if (typeof formatString !== 'string') {
+        formatString = formatString.toString();
+    }
 
     var pattern = /(.*?)%(.)(.*)/;
     var rest = formatString;
@@ -311,19 +327,20 @@ function __format (formatString, args) {
     return remainingArgs;
 }
 
-function __formatted (object, formatChar) {
-
+function __formatted(object, formatChar) {
     try {
         switch (formatChar) {
-        case 'j':
-        case 'o': return JSON.stringify(object);
-        case 'c': return '';
+            case 'j':
+            case 'o':
+                return JSON.stringify(object);
+            case 'c':
+                return '';
         }
     } catch (e) {
         return 'error JSON.stringify()ing argument: ' + e;
     }
 
-    if ((object === null) || (object === undefined)) {
+    if (object === null || object === undefined) {
         return Object.prototype.toString.call(object);
     }
 

@@ -17,7 +17,7 @@
  * specific language governing permissions and limitations
  * under the License.
  *
-*/
+ */
 
 // ------------------------------------------------------------------------------
 
@@ -46,7 +46,7 @@ var Timers = {};
 // ------------------------------------------------------------------------------
 // used for unimplemented methods
 // ------------------------------------------------------------------------------
-function noop () {}
+function noop() {}
 
 // ------------------------------------------------------------------------------
 // used for unimplemented methods
@@ -166,11 +166,15 @@ console.table = function (data, columns) {
 // ------------------------------------------------------------------------------
 // return a new function that calls both functions passed as args
 // ------------------------------------------------------------------------------
-function wrappedOrigCall (orgFunc, newFunc) {
+function wrappedOrigCall(orgFunc, newFunc) {
     return function () {
         var args = [].slice.call(arguments);
-        try { orgFunc.apply(WinConsole, args); } catch (e) {}
-        try { newFunc.apply(console, args); } catch (e) {}
+        try {
+            orgFunc.apply(WinConsole, args);
+        } catch (e) {}
+        try {
+            newFunc.apply(console, args);
+        } catch (e) {}
     };
 }
 

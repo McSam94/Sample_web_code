@@ -33,22 +33,25 @@ exports.get_apple_ios_version = function () {
         }
     });
 
-    return d.promise.then(function (output) {
-        var regex = /[0-9]*\.[0-9]*/;
-        var versions = [];
-        var regexIOS = /^iOS \d+/;
-        output = output.split('\n');
-        for (var i = 0; i < output.length; i++) {
-            if (output[i].trim().match(regexIOS)) {
-                versions[versions.length] = parseFloat(output[i].match(regex)[0]);
+    return d.promise.then(
+        function (output) {
+            var regex = /[0-9]*\.[0-9]*/;
+            var versions = [];
+            var regexIOS = /^iOS \d+/;
+            output = output.split('\n');
+            for (var i = 0; i < output.length; i++) {
+                if (output[i].trim().match(regexIOS)) {
+                    versions[versions.length] = parseFloat(output[i].match(regex)[0]);
+                }
             }
-        }
-        versions.sort();
-        console.log(versions[0]);
-        return Q();
-    }, function (stderr) {
-        return Q.reject(stderr);
-    });
+            versions.sort();
+            console.log(versions[0]);
+            return Q();
+        },
+        function (stderr) {
+            return Q.reject(stderr);
+        },
+    );
 };
 
 exports.get_apple_osx_version = function () {
@@ -61,22 +64,25 @@ exports.get_apple_osx_version = function () {
         }
     });
 
-    return d.promise.then(function (output) {
-        var regex = /[0-9]*\.[0-9]*/;
-        var versions = [];
-        var regexOSX = /^macOS \d+/;
-        output = output.split('\n');
-        for (var i = 0; i < output.length; i++) {
-            if (output[i].trim().match(regexOSX)) {
-                versions[versions.length] = parseFloat(output[i].match(regex)[0]);
+    return d.promise.then(
+        function (output) {
+            var regex = /[0-9]*\.[0-9]*/;
+            var versions = [];
+            var regexOSX = /^macOS \d+/;
+            output = output.split('\n');
+            for (var i = 0; i < output.length; i++) {
+                if (output[i].trim().match(regexOSX)) {
+                    versions[versions.length] = parseFloat(output[i].match(regex)[0]);
+                }
             }
-        }
-        versions.sort();
-        console.log(versions[0]);
-        return Q();
-    }, function (stderr) {
-        return Q.reject(stderr);
-    });
+            versions.sort();
+            console.log(versions[0]);
+            return Q();
+        },
+        function (stderr) {
+            return Q.reject(stderr);
+        },
+    );
 };
 
 exports.get_apple_xcode_version = function () {
@@ -151,11 +157,19 @@ exports.get_ios_sim_version = function () {
  */
 exports.get_tool_version = function (toolName) {
     switch (toolName) {
-    case 'xcodebuild': return exports.get_apple_xcode_version();
-    case 'ios-sim': return exports.get_ios_sim_version();
-    case 'ios-deploy': return exports.get_ios_deploy_version();
-    case 'pod': return exports.get_cocoapods_version();
-    default: return Q.reject(toolName + ' is not valid tool name. Valid names are: \'xcodebuild\', \'ios-sim\', \'ios-deploy\', and \'pod\'');
+        case 'xcodebuild':
+            return exports.get_apple_xcode_version();
+        case 'ios-sim':
+            return exports.get_ios_sim_version();
+        case 'ios-deploy':
+            return exports.get_ios_deploy_version();
+        case 'pod':
+            return exports.get_cocoapods_version();
+        default:
+            return Q.reject(
+                toolName +
+                    " is not valid tool name. Valid names are: 'xcodebuild', 'ios-sim', 'ios-deploy', and 'pod'",
+            );
     }
 };
 
@@ -168,7 +182,7 @@ exports.get_tool_version = function (toolName) {
  *                                    positive otherwise and 0 if versions are equal.
  */
 exports.compareVersions = (...args) => {
-    const coerceToSemverIfInvalid = v => {
+    const coerceToSemverIfInvalid = (v) => {
         const semverVersion = semver.parse(v) || semver.coerce(v);
         if (!semverVersion) throw new TypeError(`Invalid Version: ${v}`);
         return semverVersion;

@@ -21,7 +21,7 @@
 var fs = require('fs');
 var CordovaError = require('cordova-common').CordovaError;
 
-function BridgingHeader (bridgingHeaderPath) {
+function BridgingHeader(bridgingHeaderPath) {
     this.path = bridgingHeaderPath;
     this.bridgingHeaders = null;
     if (!fs.existsSync(this.path)) {
@@ -35,19 +35,24 @@ BridgingHeader.prototype.addHeader = function (plugin_id, header_path) {
 };
 
 BridgingHeader.prototype.removeHeader = function (plugin_id, header_path) {
-    this.bridgingHeaders = this.bridgingHeaders.filter(function (line) {
-        if (this.found) {
-            return true;
-        }
-        if (line.type === 'code') {
-            var re = new RegExp('#import\\s+"' + preg_quote(header_path) + '"(\\s*|\\s.+)(\\n|$)');
-            if (re.test(line.code)) {
-                this.found = true;
-                return false;
+    this.bridgingHeaders = this.bridgingHeaders.filter(
+        function (line) {
+            if (this.found) {
+                return true;
             }
-        }
-        return true;
-    }, { found: false });
+            if (line.type === 'code') {
+                var re = new RegExp(
+                    '#import\\s+"' + preg_quote(header_path) + '"(\\s*|\\s.+)(\\n|$)',
+                );
+                if (re.test(line.code)) {
+                    this.found = true;
+                    return false;
+                }
+            }
+            return true;
+        },
+        { found: false },
+    );
 };
 
 BridgingHeader.prototype.write = function () {
@@ -56,9 +61,11 @@ BridgingHeader.prototype.write = function () {
 };
 
 BridgingHeader.prototype.__stringifyForBridgingHeader = function (bridgingHeaders) {
-    return bridgingHeaders.map(function (obj) {
-        return obj.code;
-    }).join('');
+    return bridgingHeaders
+        .map(function (obj) {
+            return obj.code;
+        })
+        .join('');
 };
 
 BridgingHeader.prototype.__parseForBridgingHeader = function (text) {
@@ -68,48 +75,50 @@ BridgingHeader.prototype.__parseForBridgingHeader = function (text) {
     var start = 0;
     while (i < text.length) {
         switch (type) {
-        case 'comment':
-            if (i + 1 < text.length && text[i] === '*' && text[i + 1] === '/') {
-                i += 2;
-                list.push({ type: type, code: text.slice(start, i) });
-                type = 'code';
-                start = i;
-            } else {
-                i += 1;
-            }
-            break;
-        case 'line-comment':
-            if (i < text.length && text[i] === '\n') {
-                i += 1;
-                list.push({ type: type, code: text.slice(start, i) });
-                type = 'code';
-                start = i;
-            } else {
-                i += 1;
-            }
-            break;
-        case 'code':
-        default:
-            if (i + 1 < text.length && text[i] === '/' && text[i + 1] === '*') { // comment
-                if (start < i) {
+            case 'comment':
+                if (i + 1 < text.length && text[i] === '*' && text[i + 1] === '/') {
+                    i += 2;
                     list.push({ type: type, code: text.slice(start, i) });
+                    type = 'code';
+                    start = i;
+                } else {
+                    i += 1;
                 }
-                type = 'comment';
-                start = i;
-            } else if (i + 1 < text.length && text[i] === '/' && text[i + 1] === '/') { // line comment
-                if (start < i) {
+                break;
+            case 'line-comment':
+                if (i < text.length && text[i] === '\n') {
+                    i += 1;
                     list.push({ type: type, code: text.slice(start, i) });
+                    type = 'code';
+                    start = i;
+                } else {
+                    i += 1;
                 }
-                type = 'line-comment';
-                start = i;
-            } else if (i < text.length && text[i] === '\n') {
-                i += 1;
-                list.push({ type: type, code: text.slice(start, i) });
-                start = i;
-            } else {
-                i += 1;
-            }
-            break;
+                break;
+            case 'code':
+            default:
+                if (i + 1 < text.length && text[i] === '/' && text[i + 1] === '*') {
+                    // comment
+                    if (start < i) {
+                        list.push({ type: type, code: text.slice(start, i) });
+                    }
+                    type = 'comment';
+                    start = i;
+                } else if (i + 1 < text.length && text[i] === '/' && text[i + 1] === '/') {
+                    // line comment
+                    if (start < i) {
+                        list.push({ type: type, code: text.slice(start, i) });
+                    }
+                    type = 'line-comment';
+                    start = i;
+                } else if (i < text.length && text[i] === '\n') {
+                    i += 1;
+                    list.push({ type: type, code: text.slice(start, i) });
+                    start = i;
+                } else {
+                    i += 1;
+                }
+                break;
         }
     }
     if (start < i) {
@@ -118,8 +127,11 @@ BridgingHeader.prototype.__parseForBridgingHeader = function (text) {
     return list;
 };
 
-function preg_quote (str, delimiter) {
-    return (str + '').replace(new RegExp('[.\\\\+*?\\[\\^\\]$(){}=!<>|:\\' + (delimiter || '') + '-]', 'g'), '\\$&');
+function preg_quote(str, delimiter) {
+    return (str + '').replace(
+        new RegExp('[.\\\\+*?\\[\\^\\]$(){}=!<>|:\\' + (delimiter || '') + '-]', 'g'),
+        '\\$&',
+    );
 }
 
 module.exports.BridgingHeader = BridgingHeader;

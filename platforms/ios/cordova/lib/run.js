@@ -31,7 +31,6 @@ var cordovaPath = path.join(__dirname, '..');
 var projectPath = path.join(__dirname, '..', '..');
 
 module.exports.run = function (runOptions) {
-
     // Validate args
     if (runOptions.device && runOptions.emulator) {
         return Q.reject('Only one of "device"/"emulator" options should be specified');
@@ -49,41 +48,54 @@ module.exports.run = function (runOptions) {
 
     var useDevice = !!runOptions.device;
 
-    return require('./list-devices').run()
+    return require('./list-devices')
+        .run()
         .then(function (devices) {
-            if (devices.length > 0 && !(runOptions.emulator)) {
+            if (devices.length > 0 && !runOptions.emulator) {
                 useDevice = true;
                 // we also explicitly set device flag in options as we pass
                 // those parameters to other api (build as an example)
                 runOptions.device = true;
                 return check_reqs.check_ios_deploy();
             }
-        }).then(function () {
+        })
+        .then(function () {
             if (!runOptions.nobuild) {
                 return build.run(runOptions);
             } else {
                 return Q.resolve();
             }
-        }).then(function () {
+        })
+        .then(function () {
             return build.findXCodeProjectIn(projectPath);
-        }).then(function (projectName) {
+        })
+        .then(function (projectName) {
             var appPath = path.join(projectPath, 'build', 'emulator', projectName + '.app');
             var buildOutputDir = path.join(projectPath, 'build', 'device');
 
             // select command to run and arguments depending whether
             // we're running on device/emulator
             if (useDevice) {
-                return module.exports.checkDeviceConnected()
+                return module.exports
+                    .checkDeviceConnected()
                     .then(function () {
                         // Unpack IPA
                         var ipafile = path.join(buildOutputDir, projectName + '.ipa');
 
                         // unpack the existing platform/ios/build/device/appname.ipa (zipfile), will create a Payload folder
-                        return superspawn.spawn('unzip', [ '-o', '-qq', ipafile ], { cwd: buildOutputDir, printCommand: true, stdio: 'inherit' });
+                        return superspawn.spawn('unzip', ['-o', '-qq', ipafile], {
+                            cwd: buildOutputDir,
+                            printCommand: true,
+                            stdio: 'inherit',
+                        });
                     })
                     .then(function () {
                         // Uncompress IPA (zip file)
-                        var appFileInflated = path.join(buildOutputDir, 'Payload', projectName + '.app');
+                        var appFileInflated = path.join(
+                            buildOutputDir,
+                            'Payload',
+                            projectName + '.app',
+                        );
                         var appFile = path.join(buildOutputDir, projectName + '.app');
                         var payloadFolder = path.join(buildOutputDir, 'Payload');
 
@@ -96,18 +108,32 @@ module.exports.run = function (runOptions) {
 
                         return null;
                     })
-                    .then(function () {
-                        appPath = path.join(projectPath, 'build', 'device', projectName + '.app');
-                        var extraArgs = [];
-                        if (runOptions.argv) {
-                            // argv.slice(2) removes node and run.js, filterSupportedArgs removes the run.js args
-                            extraArgs = module.exports.filterSupportedArgs(runOptions.argv.slice(2));
-                        }
-                        return module.exports.deployToDevice(appPath, runOptions.target, extraArgs);
-                    }, function () {
-                        // if device connection check failed use emulator then
-                        return module.exports.deployToSim(appPath, runOptions.target);
-                    });
+                    .then(
+                        function () {
+                            appPath = path.join(
+                                projectPath,
+                                'build',
+                                'device',
+                                projectName + '.app',
+                            );
+                            var extraArgs = [];
+                            if (runOptions.argv) {
+                                // argv.slice(2) removes node and run.js, filterSupportedArgs removes the run.js args
+                                extraArgs = module.exports.filterSupportedArgs(
+                                    runOptions.argv.slice(2),
+                                );
+                            }
+                            return module.exports.deployToDevice(
+                                appPath,
+                                runOptions.target,
+                                extraArgs,
+                            );
+                        },
+                        function () {
+                            // if device connection check failed use emulator then
+                            return module.exports.deployToSim(appPath, runOptions.target);
+                        },
+                    );
             } else {
                 return module.exports.deployToSim(appPath, runOptions.target);
             }
@@ -127,9 +153,17 @@ module.exports.listEmulators = listEmulators;
  *
  * @return {Array} array with unsupported args for the 'run' command
  */
-function filterSupportedArgs (args) {
+function filterSupportedArgs(args) {
     var filtered = [];
-    var sargs = ['--device', '--emulator', '--nobuild', '--list', '--target', '--debug', '--release'];
+    var sargs = [
+        '--device',
+        '--emulator',
+        '--nobuild',
+        '--list',
+        '--target',
+        '--debug',
+        '--release',
+    ];
     var re = new RegExp(sargs.join('|'));
 
     args.forEach(function (element) {
@@ -147,8 +181,11 @@ function filterSupportedArgs (args) {
  * Checks if any iOS device is connected
  * @return {Promise} Fullfilled when any device is connected, rejected otherwise
  */
-function checkDeviceConnected () {
-    return superspawn.spawn('ios-deploy', ['-c', '-t', '1'], { printCommand: true, stdio: 'inherit' });
+function checkDeviceConnected() {
+    return superspawn.spawn('ios-deploy', ['-c', '-t', '1'], {
+        printCommand: true,
+        stdio: 'inherit',
+    });
 }
 
 /**
@@ -157,13 +194,21 @@ function checkDeviceConnected () {
  * @param  {String} appPath Path to application package
  * @return {Promise}        Resolves when deploy succeeds otherwise rejects
  */
-function deployToDevice (appPath, target, extraArgs) {
+function deployToDevice(appPath, target, extraArgs) {
     events.emit('log', 'Deploying to device');
     // Deploying to device...
     if (target) {
-        return superspawn.spawn('ios-deploy', ['--justlaunch', '-d', '-b', appPath, '-i', target].concat(extraArgs), { printCommand: true, stdio: 'inherit' });
+        return superspawn.spawn(
+            'ios-deploy',
+            ['--justlaunch', '-d', '-b', appPath, '-i', target].concat(extraArgs),
+            { printCommand: true, stdio: 'inherit' },
+        );
     } else {
-        return superspawn.spawn('ios-deploy', ['--justlaunch', '--no-wifi', '-d', '-b', appPath].concat(extraArgs), { printCommand: true, stdio: 'inherit' });
+        return superspawn.spawn(
+            'ios-deploy',
+            ['--justlaunch', '--no-wifi', '-d', '-b', appPath].concat(extraArgs),
+            { printCommand: true, stdio: 'inherit' },
+        );
     }
 }
 
@@ -173,11 +218,12 @@ function deployToDevice (appPath, target, extraArgs) {
  * @param  {String} target  Target device type
  * @return {Promise}        Resolves when deploy succeeds otherwise rejects
  */
-function deployToSim (appPath, target) {
+function deployToSim(appPath, target) {
     events.emit('log', 'Deploying to simulator');
     if (!target) {
         // Select target device for emulator
-        return require('./list-emulator-images').run()
+        return require('./list-emulator-images')
+            .run()
             .then(function (emulators) {
                 if (emulators.length > 0) {
                     target = emulators[0];
@@ -187,7 +233,10 @@ function deployToSim (appPath, target) {
                         target = emulator;
                     }
                 });
-                events.emit('log', `No target specified for emulator. Deploying to "${target}" simulator.`);
+                events.emit(
+                    'log',
+                    `No target specified for emulator. Deploying to "${target}" simulator.`,
+                );
                 return startSim(appPath, target);
             });
     } else {
@@ -195,17 +244,23 @@ function deployToSim (appPath, target) {
     }
 }
 
-function startSim (appPath, target) {
+function startSim(appPath, target) {
     var logPath = path.join(cordovaPath, 'console.log');
 
-    return iossimLaunch(appPath, 'com.apple.CoreSimulator.SimDeviceType.' + target, logPath, '--exit');
+    return iossimLaunch(
+        appPath,
+        'com.apple.CoreSimulator.SimDeviceType.' + target,
+        logPath,
+        '--exit',
+    );
 }
 
-function iossimLaunch (appPath, devicetypeid, log, exit) {
+function iossimLaunch(appPath, devicetypeid, log, exit) {
     var f = path.resolve(path.dirname(require.resolve('ios-sim')), 'bin', 'ios-sim');
     var params = ['launch', appPath, '--devicetypeid', devicetypeid, '--log', log, exit];
 
-    return superspawn.spawn(f, params, { cwd: projectPath, printCommand: true })
+    return superspawn
+        .spawn(f, params, { cwd: projectPath, printCommand: true })
         .progress(function (stdio) {
             if (stdio.stderr) {
                 events.emit('error', `[ios-sim] ${stdio.stderr}`);
@@ -219,8 +274,9 @@ function iossimLaunch (appPath, devicetypeid, log, exit) {
         });
 }
 
-function listDevices () {
-    return require('./list-devices').run()
+function listDevices() {
+    return require('./list-devices')
+        .run()
         .then(function (devices) {
             events.emit('log', 'Available iOS Devices:');
             devices.forEach(function (device) {
@@ -229,8 +285,9 @@ function listDevices () {
         });
 }
 
-function listEmulators () {
-    return require('./list-emulator-images').run()
+function listEmulators() {
+    return require('./list-emulator-images')
+        .run()
         .then(function (emulators) {
             events.emit('log', 'Available iOS Simulators:');
             emulators.forEach(function (emulator) {
@@ -240,14 +297,20 @@ function listEmulators () {
 }
 
 module.exports.help = function () {
-    console.log('\nUsage: run [ --device | [ --emulator [ --target=<id> ] ] ] [ --debug | --release | --nobuild ]');
+    console.log(
+        '\nUsage: run [ --device | [ --emulator [ --target=<id> ] ] ] [ --debug | --release | --nobuild ]',
+    );
     // TODO: add support for building different archs
     // console.log("           [ --archs=\"<list of target architectures>\" ] ");
     console.log('    --device      : Deploys and runs the project on the connected device.');
     console.log('    --emulator    : Deploys and runs the project on an emulator.');
     console.log('    --target=<id> : Deploys and runs the project on the specified target.');
-    console.log('    --debug       : Builds project in debug mode. (Passed down to build command, if necessary)');
-    console.log('    --release     : Builds project in release mode. (Passed down to build command, if necessary)');
+    console.log(
+        '    --debug       : Builds project in debug mode. (Passed down to build command, if necessary)',
+    );
+    console.log(
+        '    --release     : Builds project in release mode. (Passed down to build command, if necessary)',
+    );
     console.log('    --nobuild     : Uses pre-built package, or errors if project is not built.');
     // TODO: add support for building different archs
     // console.log("    --archs       : Specific chip architectures (`anycpu`, `arm`, `x86`, `x64`).");
@@ -255,7 +318,7 @@ module.exports.help = function () {
     console.log('Examples:');
     console.log('    run');
     console.log('    run --device');
-    console.log('    run --emulator --target=\"iPhone-6-Plus\"'); /* eslint no-useless-escape : 0 */
+    console.log('    run --emulator --target="iPhone-6-Plus"'); /* eslint no-useless-escape : 0 */
     console.log('    run --device --release');
     console.log('    run --emulator --debug');
     console.log('');

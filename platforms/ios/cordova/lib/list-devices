@@ -26,11 +26,20 @@ var exec = require('child_process').exec;
  * Gets list of connected iOS devices
  * @return {Promise} Promise fulfilled with list of available iOS devices
  */
-function listDevices () {
+function listDevices() {
     var commands = [
-        Q.nfcall(exec, "ioreg -p IOUSB -l | sed -n -e '/iPad/,/USB Serial Number/p' | grep 'Serial Number' | awk -F\\\" '{print $4 \" iPad\"}'"),
-        Q.nfcall(exec, "ioreg -p IOUSB -l | sed -n -e '/iPhone/,/USB Serial Number/p' | grep 'Serial Number' | awk -F\\\" '{print $4 \" iPhone\"}'"),
-        Q.nfcall(exec, "ioreg -p IOUSB -l | sed -n -e '/iPod/,/USB Serial Number/p' | grep 'Serial Number' | awk -F\\\" '{print $4 \" iPod\"}'")
+        Q.nfcall(
+            exec,
+            "ioreg -p IOUSB -l | sed -n -e '/iPad/,/USB Serial Number/p' | grep 'Serial Number' | awk -F\\\" '{print $4 \" iPad\"}'",
+        ),
+        Q.nfcall(
+            exec,
+            "ioreg -p IOUSB -l | sed -n -e '/iPhone/,/USB Serial Number/p' | grep 'Serial Number' | awk -F\\\" '{print $4 \" iPhone\"}'",
+        ),
+        Q.nfcall(
+            exec,
+            "ioreg -p IOUSB -l | sed -n -e '/iPod/,/USB Serial Number/p' | grep 'Serial Number' | awk -F\\\" '{print $4 \" iPod\"}'",
+        ),
     ];
 
     // wrap al lexec calls into promises and wait until they're fullfilled

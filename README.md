@@ -13,20 +13,24 @@
 1. Make sure you have dependencies installed on your machine
     - `Node.js` (v14.7.0 recommended)
     - `Cordova-lib` (v9.0.0)
-2. Setup enviroment as per React-native's documentation (https://reactnative.dev/docs/environment-setup) for both Android & IOS
-3. Clone the project
-4. Run `yarn bootstrap` to install all the dependencies
-5. Start the project
-    - [IOS] `yarn ios`
-    - [Android] `yarn android`
-
-> **Note** : If you got this error `Failed to build iOS project. We ran "xcodebuild" command but it exited with error code 65.` when you run `yarn ios`, run `yarn pod` and try again
+2. Clone the project
+3. Run `npm i` to install all the dependencies
+4. Start the project
+    - [IOS] `npm run ios`
+    - [Android] `npm run android`
 
 <br />
 
 ## Structure
 
-This is a monorepo project using `yarn workspace`. Always run your script at the root project unless it's necessary. This is because `app` package is depend on another. E.g: `app` depends on `components` and `shared` packages, running `yarn ios` inside `packages/app` wouldn't work because `@metlife/components` and `@metlife/shared` dependencies are not in npm registry.
+-   Any UI related component should create under `view/components` directory.
+-   Any UI related pages should create under `view/pages` directory.
+-   Any function that is commonly used should create under `utils` directory
+-   Any api call services should create under `services` directory
+
+# Alias
+
+-   Use `Services`, `Stores`, `Utils`, `Pages`, `Components` alias when importing.
 
 ```
 .

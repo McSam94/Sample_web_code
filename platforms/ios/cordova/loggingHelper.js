@@ -26,5 +26,5 @@ module.exports = {
         } else if (opts.silent || (Array.isArray(opts) && opts.indexOf('--silent') !== -1)) {
             CordovaLogger.get().setLevel('error');
         }
-    }
+    },
 };
