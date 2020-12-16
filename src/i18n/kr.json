@@ -1,0 +1,18 @@
+{
+    "login": {
+        "validation": {
+            "username": "사용자 이름 필드는 필수입니다",
+            "password": "비밀번호 입력란이 필요합니다"
+        },
+        "login": "로그인",
+        "username": "사용자 이름",
+        "password": "암호"
+    },
+    "home": {
+        "title": "더 이상은 없어 {{ framework }}!"
+    },
+    "setting": {
+        "dark-mode": "다크 모드 전환",
+        "logout": "로그 아웃"
+    }
+}

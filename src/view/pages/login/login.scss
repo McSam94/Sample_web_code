@@ -1,0 +1,21 @@
+.login {
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    &__container {
+        display: flex;
+        flex-direction: column;
+        max-width: 50rem;
+        width: 70%;
+    }
+    &__field {
+        margin-bottom: 1.5rem;
+    }
+    &__version {
+        margin-bottom: 1.5rem;
+        text-align: center;
+        font-size: var(--text-size-s);
+    }
+}

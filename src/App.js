@@ -1,7 +1,22 @@
-import React from 'react'
+import React, { useContext } from 'react';
+import cn from 'classnames';
+import { UiContext } from 'Stores';
+import Navigation from 'Navigations';
+import './App.scss';
 
 const App = () => {
-  return <div style={{ display: 'flex', justifyContent: 'center' }}>Hello from React</div>
-}
+    const { isDarkMode } = useContext(UiContext);
 
-export default App
+    return (
+        <div
+            className={cn('servicing-app', {
+                'theme--dark': isDarkMode,
+                'theme--light': !isDarkMode,
+            })}
+        >
+            <Navigation />
+        </div>
+    );
+};
+
+export default App;

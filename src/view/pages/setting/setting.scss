@@ -1,0 +1,31 @@
+.about {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    width: 50%;
+    margin: 0 auto;
+    justify-content: center;
+    align-items: center;
+
+    &__darkmode {
+        margin-top: 1rem;
+        cursor: pointer;
+    }
+
+    &__language {
+        margin-top: 1rem;
+        font-size: var(--text-size-xs);
+        color: var(--text-general);
+    }
+
+    &__logout {
+        margin-top: 1rem;
+    }
+
+    a {
+        color: var(--text-general);
+        margin-top: 1rem;
+        font-size: var(--text-size-xs);
+        text-decoration: none;
+    }
+}

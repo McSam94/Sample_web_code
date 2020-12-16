@@ -1,0 +1,36 @@
+.met-input {
+    font-size: var(--text-size-s);
+    &--underline {
+        border-bottom: solid 1px var(--border-general);
+    }
+    &--outline {
+        border: solid 1px var(--border-general);
+        border-radius: 0.2rem;
+    }
+    &--error {
+        border-color: var(--text-error);
+    }
+    &__container {
+        display: flex;
+        flex-direction: column;
+        position: relative;
+    }
+    &__label {
+        top: 50%;
+        left: 1rem;
+        position: absolute;
+        background-color: var(--background-general);
+        transition: top 0.3s ease-in-out;
+        transform: translateY(-50%);
+        pointer-events: none;
+        padding: 0 0.2rem;
+
+        &--focused {
+            top: 0;
+            transition: top 0.3s ease-in-out;
+        }
+    }
+    &__field {
+        padding: 1rem 1.5rem;
+    }
+}
