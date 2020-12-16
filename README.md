@@ -28,9 +28,15 @@
 -   Any function that is commonly used should create under `utils` directory
 -   Any api call services should create under `services` directory
 
-# Alias
+### Alias
 
 -   Use `Services`, `Stores`, `Utils`, `Pages`, `Components` alias when importing.
+
+```
+import { Button } from 'Components
+```
+
+### Tree Directory
 
 ```
 .
