@@ -1,7 +1,8 @@
-import React, { forwardRef, memo, useCallback, useEffect, useState } from 'react';
+import React, { forwardRef, memo, useCallback, useEffect, useRef, useState } from 'react';
 import PropTypes from 'prop-types';
 import cn from 'classnames';
 import Icon from '../icon/icon';
+import { useOnClickOutside } from '../hooks';
 import './dropdown.scss';
 
 const Dropdown = forwardRef(
@@ -20,6 +21,14 @@ const Dropdown = forwardRef(
         const toggleDropdown = useCallback(() => {
             setshouldOpen((prevState) => !prevState);
         }, []);
+
+        const closeDropdown = useCallback(() => {
+            if (shouldOpen) {
+                toggleDropdown();
+            }
+        }, [shouldOpen, toggleDropdown]);
+
+        useOnClickOutside(ref, closeDropdown);
 
         useEffect(() => {
             setshouldOpen(false);
@@ -44,10 +53,10 @@ const Dropdown = forwardRef(
                 >
                     {label}
                 </div>
-                <div className="met-dropdown__container" onClick={toggleDropdown}>
+                <div className='met-dropdown__container' onClick={toggleDropdown}>
                     <input
-                        className="met-dropdown__input"
-                        type="text"
+                        className='met-dropdown__input'
+                        type='text'
                         value={items.find((item) => item.value === selectedValue)?.label}
                         onChange={() => {}}
                     />
@@ -55,7 +64,7 @@ const Dropdown = forwardRef(
                         className={cn('met-dropdown__icon', {
                             'met-dropdown__icon--opened': shouldOpen,
                         })}
-                        name="arrow-down"
+                        name='arrow-down'
                     />
                 </div>
                 <div
@@ -66,7 +75,7 @@ const Dropdown = forwardRef(
                     {items.map((item, idx) => (
                         <div
                             key={idx}
-                            className="met-dropdown__list-item"
+                            className='met-dropdown__list-item'
                             onClick={() => onItemClick(item.value)}
                         >
                             {item.label}

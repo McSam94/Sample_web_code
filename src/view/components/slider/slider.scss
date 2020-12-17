@@ -1,0 +1,15 @@
+.met-slider {
+    min-width: 22rem;
+
+    &__description {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        font-size: var(--text-size-s);
+
+        &-min {
+        }
+        &-max {
+        }
+    }
+}

@@ -12,7 +12,7 @@ const initRender = () => {
     // eslint-disable-next-line react/no-render-return-value
     ReactDOM.render(
         <StrictMode>
-            <Suspense fallback="Loading...">
+            <Suspense fallback='Loading...'>
                 <Providers>
                     <BrowserRouter>
                         <App />

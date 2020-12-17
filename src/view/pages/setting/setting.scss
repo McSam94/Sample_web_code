@@ -8,18 +8,16 @@
     align-items: center;
 
     &__darkmode {
-        margin-top: 1rem;
         cursor: pointer;
     }
 
     &__language {
-        margin-top: 1rem;
         font-size: var(--text-size-xs);
         color: var(--text-general);
     }
 
-    &__logout {
-        margin-top: 1rem;
+    &__element {
+        margin-top: 2rem;
     }
 
     a {

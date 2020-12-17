@@ -1,9 +1,9 @@
-import { ArrowDown } from 'Icons';
+import { ArrowDown, DarkArrowDown } from 'Icons';
 
-export default (name) => {
+export default (name, isDarkMode) => {
     switch (name) {
         case 'arrow-down':
-            return ArrowDown;
+            return isDarkMode ? DarkArrowDown : ArrowDown;
         default:
             return undefined;
     }

@@ -24,6 +24,8 @@
     }
     &__input {
         padding: 1rem 1.5rem;
+        color: var(--text-general);
+        background-color: var(--background-general);
         flex: 9;
     }
     &__icon {

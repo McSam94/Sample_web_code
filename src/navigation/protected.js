@@ -1,27 +1,23 @@
 import React, { useContext } from 'react';
-import { Route, Switch, Redirect } from 'react-router-dom';
-import { Home, Setting } from 'Pages';
+import PropTypes from 'prop-types';
+import { Route, Redirect } from 'react-router-dom';
 import { AuthContext } from 'Stores';
 
-const ProtectedNavigation = () => {
-    const { token } = useContext(AuthContext);
+const ProtectedRoute = ({ component: Component, ...rest }) => {
+    const { token, isLoggedIn } = useContext(AuthContext);
 
     return (
-        <>
-            {token ? (
-                <Switch>
-                    <Route exact path="/">
-                        <Home />
-                    </Route>
-                    <Route path="/setting">
-                        <Setting />
-                    </Route>
-                </Switch>
-            ) : (
-                <Redirect to="/login" />
-            )}
-        </>
+        <Route
+            {...rest}
+            render={(props) =>
+                token && isLoggedIn ? <Component {...props} /> : <Redirect to='/login' />
+            }
+        />
     );
 };
 
-export default ProtectedNavigation;
+ProtectedRoute.propTypes = {
+    component: PropTypes.oneOfType([PropTypes.func, PropTypes.object]),
+};
+
+export default ProtectedRoute;

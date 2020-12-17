@@ -41,7 +41,7 @@ const Button = ({ link, ...props }) => {
     return (
         <>
             {link ? (
-                <Link className="met-button__link" to={link}>
+                <Link className='met-button__link' to={link}>
                     <ButtonDiv {...props} />
                 </Link>
             ) : (

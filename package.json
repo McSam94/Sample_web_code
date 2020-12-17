@@ -38,6 +38,7 @@
         "i18next": "^19.8.4",
         "i18next-browser-languagedetector": "^6.0.1",
         "i18next-http-backend": "^1.0.21",
+        "rc-slider": "^9.7.1",
         "react": "^16.8.6",
         "react-context-devtool": "^2.0.0",
         "react-dom": "^16.8.6",

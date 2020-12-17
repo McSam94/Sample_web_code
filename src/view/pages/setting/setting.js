@@ -2,7 +2,7 @@ import React, { useContext, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 import { UiContext, AuthContext } from 'Stores';
-import { Button, Dropdown } from 'Components';
+import { Button, Dropdown, Slider } from 'Components';
 import './setting.scss';
 
 const Setting = () => {
@@ -13,14 +13,14 @@ const Setting = () => {
     const updateLang = useCallback((value) => i18n.changeLanguage(value), [i18n]);
 
     return (
-        <div className="about">
-            <Link to="/">⬅ back</Link>
-            <Button primary className="about__darkmode" onClick={toggleDarkMode}>
+        <div className='about'>
+            <Link to='/'>⬅ back</Link>
+            <Button primary className='about__darkmode about__element' onClick={toggleDarkMode}>
                 {t('setting.dark-mode')}
             </Button>
 
             <Dropdown
-                className="about__language"
+                className='about__language about__element'
                 items={[
                     {
                         label: 'English',
@@ -32,10 +32,13 @@ const Setting = () => {
                     },
                 ]}
                 value={i18n.language}
-                label="Language"
+                label='Language'
                 onChange={updateLang}
             />
-            <Button primary className="about__logout" onClick={logout}>
+
+            <Slider className='about__element' min={1} max={100} unit='s' />
+
+            <Button primary className='about__logout about__element' onClick={logout}>
                 {t('setting.logout')}
             </Button>
         </div>
