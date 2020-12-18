@@ -14,5 +14,10 @@
     "setting": {
         "dark-mode": "다크 모드 전환",
         "logout": "로그 아웃"
+    },
+    "components": {
+        "dropdown": {
+            "no-item": "옵션이 없습니다"
+        }
     }
 }

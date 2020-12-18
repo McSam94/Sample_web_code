@@ -30,48 +30,73 @@ var builders = require('./builders/builders');
 var events = require('cordova-common').events;
 var spawn = require('cordova-common').superspawn.spawn;
 var CordovaError = require('cordova-common').CordovaError;
+var PackageType = require('./PackageType');
 
 module.exports.parseBuildOptions = parseOpts;
-function parseOpts (options, resolvedTarget, projectRoot) {
+function parseOpts(options, resolvedTarget, projectRoot) {
     options = options || {};
-    options.argv = nopt({
-        prepenv: Boolean,
-        versionCode: String,
-        minSdkVersion: String,
-        gradleArg: [String, Array],
-        keystore: path,
-        alias: String,
-        storePassword: String,
-        password: String,
-        keystoreType: String
-    }, {}, options.argv, 0);
+    options.argv = nopt(
+        {
+            prepenv: Boolean,
+            versionCode: String,
+            minSdkVersion: String,
+            maxSdkVersion: String,
+            targetSdkVersion: String,
+            gradleArg: [String, Array],
+            keystore: path,
+            alias: String,
+            storePassword: String,
+            password: String,
+            keystoreType: String,
+            packageType: String,
+        },
+        {},
+        options.argv,
+        0,
+    );
 
     // Android Studio Build method is the default
     var ret = {
         buildType: options.release ? 'release' : 'debug',
         prepEnv: options.argv.prepenv,
         arch: resolvedTarget && resolvedTarget.arch,
-        extraArgs: []
+        extraArgs: [],
     };
 
-    if (options.argv.versionCode) { ret.extraArgs.push('-PcdvVersionCode=' + options.argv.versionCode); }
-    if (options.argv.minSdkVersion) { ret.extraArgs.push('-PcdvMinSdkVersion=' + options.argv.minSdkVersion); }
+    if (options.argv.versionCode) {
+        ret.extraArgs.push('-PcdvVersionCode=' + options.argv.versionCode);
+    }
+    if (options.argv.minSdkVersion) {
+        ret.extraArgs.push('-PcdvMinSdkVersion=' + options.argv.minSdkVersion);
+    }
+    if (options.argv.maxSdkVersion) {
+        ret.extraArgs.push('-PcdvMaxSdkVersion=' + options.argv.maxSdkVersion);
+    }
+    if (options.argv.targetSdkVersion) {
+        ret.extraArgs.push('-PcdvTargetSdkVersion=' + options.argv.targetSdkVersion);
+    }
     if (options.argv.gradleArg) {
         ret.extraArgs = ret.extraArgs.concat(options.argv.gradleArg);
     }
 
     var packageArgs = {};
 
-    if (options.argv.keystore) { packageArgs.keystore = path.relative(projectRoot, path.resolve(options.argv.keystore)); }
+    if (options.argv.keystore) {
+        packageArgs.keystore = path.relative(projectRoot, path.resolve(options.argv.keystore));
+    }
 
-    ['alias', 'storePassword', 'password', 'keystoreType'].forEach(function (flagName) {
-        if (options.argv[flagName]) { packageArgs[flagName] = options.argv[flagName]; }
+    ['alias', 'storePassword', 'password', 'keystoreType', 'packageType'].forEach(function (
+        flagName,
+    ) {
+        if (options.argv[flagName]) {
+            packageArgs[flagName] = options.argv[flagName];
+        }
     });
 
     var buildConfig = options.buildConfig;
 
     // If some values are not specified as command line arguments - use build config to supplement them.
-    // Command line arguemnts have precedence over build config.
+    // Command line arguments have precedence over build config.
     if (buildConfig) {
         if (!fs.existsSync(buildConfig)) {
             throw new Error('Specified build config file does not exist: ' + buildConfig);
@@ -85,25 +110,73 @@ function parseOpts (options, resolvedTarget, projectRoot) {
                 if (androidInfo.keystore.substr(0, 1) === '~') {
                     androidInfo.keystore = process.env.HOME + androidInfo.keystore.substr(1);
                 }
-                packageArgs.keystore = path.resolve(path.dirname(buildConfig), androidInfo.keystore);
+                packageArgs.keystore = path.resolve(
+                    path.dirname(buildConfig),
+                    androidInfo.keystore,
+                );
                 events.emit('log', 'Reading the keystore from: ' + packageArgs.keystore);
             }
 
-            ['alias', 'storePassword', 'password', 'keystoreType'].forEach(function (key) {
+            ['alias', 'storePassword', 'password', 'keystoreType', 'packageType'].forEach(function (
+                key,
+            ) {
                 packageArgs[key] = packageArgs[key] || androidInfo[key];
             });
         }
     }
 
     if (packageArgs.keystore && packageArgs.alias) {
-        ret.packageInfo = new PackageInfo(packageArgs.keystore, packageArgs.alias, packageArgs.storePassword,
-            packageArgs.password, packageArgs.keystoreType);
+        ret.packageInfo = new PackageInfo(
+            packageArgs.keystore,
+            packageArgs.alias,
+            packageArgs.storePassword,
+            packageArgs.password,
+            packageArgs.keystoreType,
+        );
     }
 
     if (!ret.packageInfo) {
-        if (Object.keys(packageArgs).length > 0) {
-            events.emit('warn', '\'keystore\' and \'alias\' need to be specified to generate a signed archive.');
+        // The following loop is to decide whether to print a warning about generating a signed archive
+        // We only want to produce a warning if they are using a config property that is related to signing, but
+        // missing the required properties for signing. We don't want to produce a warning if they are simply
+        // using a build property that isn't related to signing, such as --packageType
+        let shouldWarn = false;
+        const signingKeys = ['keystore', 'alias', 'storePassword', 'password', 'keystoreType'];
+
+        for (let key in packageArgs) {
+            if (!shouldWarn && signingKeys.indexOf(key) > -1) {
+                // If we enter this condition, we have a key used for signing a build,
+                // but we are missing some required signing properties
+                shouldWarn = true;
+            }
         }
+
+        if (shouldWarn) {
+            events.emit(
+                'warn',
+                "'keystore' and 'alias' need to be specified to generate a signed archive.",
+            );
+        }
+    }
+
+    if (packageArgs.packageType) {
+        const VALID_PACKAGE_TYPES = [PackageType.APK, PackageType.BUNDLE];
+        if (VALID_PACKAGE_TYPES.indexOf(packageArgs.packageType) === -1) {
+            events.emit(
+                'warn',
+                '"' +
+                    packageArgs.packageType +
+                    '" is an invalid packageType. Valid values are: ' +
+                    VALID_PACKAGE_TYPES.join(', ') +
+                    '\nDefaulting packageType to ' +
+                    PackageType.APK,
+            );
+            ret.packageType = PackageType.APK;
+        } else {
+            ret.packageType = packageArgs.packageType;
+        }
+    } else {
+        ret.packageType = PackageType.APK;
     }
 
     return ret;
@@ -144,11 +217,18 @@ module.exports.run = function (options, optResolvedTarget) {
             return;
         }
         return builder.build(opts).then(function () {
-            var apkPaths = builder.findOutputApks(opts.buildType, opts.arch);
-            events.emit('log', 'Built the following apk(s): \n\t' + apkPaths.join('\n\t'));
+            var paths;
+            if (opts.packageType === PackageType.BUNDLE) {
+                paths = builder.findOutputBundles(opts.buildType);
+                events.emit('log', 'Built the following bundle(s): \n\t' + paths.join('\n\t'));
+            } else {
+                paths = builder.findOutputApks(opts.buildType, opts.arch);
+                events.emit('log', 'Built the following apk(s): \n\t' + paths.join('\n\t'));
+            }
+
             return {
-                apkPaths: apkPaths,
-                buildType: opts.buildType
+                paths: paths,
+                buildType: opts.buildType,
             };
         });
     });
@@ -159,36 +239,56 @@ module.exports.run = function (options, optResolvedTarget) {
  * Returns "arm" or "x86".
  */
 module.exports.detectArchitecture = function (target) {
-    function helper () {
+    function helper() {
         return Adb.shell(target, 'cat /proc/cpuinfo').then(function (output) {
             return /intel/i.exec(output) ? 'x86' : 'arm';
         });
     }
     // It sometimes happens (at least on OS X), that this command will hang forever.
     // To fix it, either unplug & replug device, or restart adb server.
-    return helper().timeout(1000, new CordovaError('Device communication timed out. Try unplugging & replugging the device.')).then(null, function (err) {
-        if (/timed out/.exec('' + err)) {
-            // adb kill-server doesn't seem to do the trick.
-            // Could probably find a x-platform version of killall, but I'm not actually
-            // sure that this scenario even happens on non-OSX machines.
-            events.emit('verbose', 'adb timed out while detecting device/emulator architecture. Killing adb and trying again.');
-            return spawn('killall', ['adb']).then(function () {
-                return helper().then(null, function () {
-                    // The double kill is sadly often necessary, at least on mac.
-                    events.emit('warn', 'adb timed out a second time while detecting device/emulator architecture. Killing adb and trying again.');
-                    return spawn('killall', ['adb']).then(function () {
+    return helper()
+        .timeout(
+            1000,
+            new CordovaError(
+                'Device communication timed out. Try unplugging & replugging the device.',
+            ),
+        )
+        .then(null, function (err) {
+            if (/timed out/.exec('' + err)) {
+                // adb kill-server doesn't seem to do the trick.
+                // Could probably find a x-platform version of killall, but I'm not actually
+                // sure that this scenario even happens on non-OSX machines.
+                events.emit(
+                    'verbose',
+                    'adb timed out while detecting device/emulator architecture. Killing adb and trying again.',
+                );
+                return spawn('killall', ['adb']).then(
+                    function () {
                         return helper().then(null, function () {
-                            return Q.reject(new CordovaError('adb timed out a third time while detecting device/emulator architecture. Try unplugging & replugging the device.'));
+                            // The double kill is sadly often necessary, at least on mac.
+                            events.emit(
+                                'warn',
+                                'adb timed out a second time while detecting device/emulator architecture. Killing adb and trying again.',
+                            );
+                            return spawn('killall', ['adb']).then(function () {
+                                return helper().then(null, function () {
+                                    return Q.reject(
+                                        new CordovaError(
+                                            'adb timed out a third time while detecting device/emulator architecture. Try unplugging & replugging the device.',
+                                        ),
+                                    );
+                                });
+                            });
                         });
-                    });
-                });
-            }, function () {
-                // For non-killall OS's.
-                return Q.reject(err);
-            });
-        }
-        throw err;
-    });
+                    },
+                    function () {
+                        // For non-killall OS's.
+                        return Q.reject(err);
+                    },
+                );
+            }
+            throw err;
+        });
 };
 
 module.exports.findBestApkForArchitecture = function (buildResults, arch) {
@@ -211,34 +311,36 @@ module.exports.findBestApkForArchitecture = function (buildResults, arch) {
             return paths[i];
         }
     }
-    throw new Error('Could not find apk architecture: ' + arch + ' build-type: ' + buildResults.buildType);
+    throw new Error(
+        'Could not find apk architecture: ' + arch + ' build-type: ' + buildResults.buildType,
+    );
 };
 
-function PackageInfo (keystore, alias, storePassword, password, keystoreType) {
+function PackageInfo(keystore, alias, storePassword, password, keystoreType) {
     this.keystore = {
-        'name': 'key.store',
-        'value': keystore
+        name: 'key.store',
+        value: keystore,
     };
     this.alias = {
-        'name': 'key.alias',
-        'value': alias
+        name: 'key.alias',
+        value: alias,
     };
     if (storePassword) {
         this.storePassword = {
-            'name': 'key.store.password',
-            'value': storePassword
+            name: 'key.store.password',
+            value: storePassword,
         };
     }
     if (password) {
         this.password = {
-            'name': 'key.alias.password',
-            'value': password
+            name: 'key.alias.password',
+            value: password,
         };
     }
     if (keystoreType) {
         this.keystoreType = {
-            'name': 'key.store.type',
-            'value': keystoreType
+            name: 'key.store.type',
+            value: keystoreType,
         };
     }
 }
@@ -254,25 +356,40 @@ PackageInfo.prototype = {
             result += '\n';
         });
         return result;
-    }
+    },
 };
 
 module.exports.help = function () {
-    console.log('Usage: ' + path.relative(process.cwd(), path.join('../build')) + ' [flags] [Signed APK flags]');
+    console.log(
+        'Usage: ' +
+            path.relative(process.cwd(), path.join('../build')) +
+            ' [flags] [Signed APK flags]',
+    );
     console.log('Flags:');
-    console.log('    \'--debug\': will build project in debug mode (default)');
-    console.log('    \'--release\': will build project for release');
-    console.log('    \'--nobuild\': will skip build process (useful when using run command)');
-    console.log('    \'--prepenv\': don\'t build, but copy in build scripts where necessary');
-    console.log('    \'--versionCode=#\': Override versionCode for this build. Useful for uploading multiple APKs.');
-    console.log('    \'--minSdkVersion=#\': Override minSdkVersion for this build. Useful for uploading multiple APKs.');
-    console.log('    \'--gradleArg=<gradle command line arg>\': Extra args to pass to the gradle command. Use one flag per arg. Ex. --gradleArg=-PcdvBuildMultipleApks=true');
+    console.log("    '--debug': will build project in debug mode (default)");
+    console.log("    '--release': will build project for release");
+    console.log("    '--nobuild': will skip build process (useful when using run command)");
+    console.log("    '--prepenv': don't build, but copy in build scripts where necessary");
+    console.log(
+        "    '--versionCode=#': Override versionCode for this build. Useful for uploading multiple APKs.",
+    );
+    console.log("    '--minSdkVersion=#': Override minSdkVersion for this build.");
+    console.log(
+        "    '--maxSdkVersion=#': Override maxSdkVersion for this build. (Not Recommended)",
+    );
+    console.log("    '--targetSdkVersion=#': Override targetSdkVersion for this build.");
+    console.log(
+        "    '--gradleArg=<gradle command line arg>': Extra args to pass to the gradle command. Use one flag per arg. Ex. --gradleArg=-PcdvBuildMultipleApks=true",
+    );
+    console.log("    '--packageType=<apk|bundle>': Builds an APK or a bundle");
     console.log('');
     console.log('Signed APK flags (overwrites debug/release-signing.proprties) :');
-    console.log('    \'--keystore=<path to keystore>\': Key store used to build a signed archive. (Required)');
-    console.log('    \'--alias=\': Alias for the key store. (Required)');
-    console.log('    \'--storePassword=\': Password for the key store. (Optional - prompted)');
-    console.log('    \'--password=\': Password for the key. (Optional - prompted)');
-    console.log('    \'--keystoreType\': Type of the keystore. (Optional)');
+    console.log(
+        "    '--keystore=<path to keystore>': Key store used to build a signed archive. (Required)",
+    );
+    console.log("    '--alias=': Alias for the key store. (Required)");
+    console.log("    '--storePassword=': Password for the key store. (Optional - prompted)");
+    console.log("    '--password=': Password for the key. (Optional - prompted)");
+    console.log("    '--keystoreType': Type of the keystore. (Optional)");
     process.exit(0);
 };

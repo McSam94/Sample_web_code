@@ -32,7 +32,7 @@
     "dependencies": {
         "axios": "^0.21.0",
         "classnames": "^2.2.6",
-        "cordova-android": "^8.0.0",
+        "cordova-android": "^8.1.0",
         "cordova-ios": "^5.1.1",
         "cordova-plugin-webpack": "^0.4.4",
         "i18next": "^19.8.4",
@@ -83,8 +83,6 @@
             "cordova-plugin-whitelist": {},
             "cordova-plugin-webpack": {}
         },
-        "platforms": [
-            "android"
-        ]
+        "platforms": []
     }
 }

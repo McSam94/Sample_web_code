@@ -14,5 +14,10 @@
     "setting": {
         "dark-mode": "Toggle Dark Mode",
         "logout": "Logout"
+    },
+    "components": {
+        "dropdown": {
+            "no-item": "No options found"
+        }
     }
 }

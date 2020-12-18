@@ -25,10 +25,11 @@ var PluginManager = require('cordova-common').PluginManager;
 
 var CordovaLogger = require('cordova-common').CordovaLogger;
 var selfEvents = require('cordova-common').events;
+var ConfigParser = require('cordova-common').ConfigParser;
 
 var PLATFORM = 'android';
 
-function setupEvents (externalEventEmitter) {
+function setupEvents(externalEventEmitter) {
     if (externalEventEmitter) {
         // This will make the platform internal events visible outside
         selfEvents.forwardEventsTo(externalEventEmitter);
@@ -52,7 +53,7 @@ function setupEvents (externalEventEmitter) {
  *
  * * platform: String that defines a platform name.
  */
-function Api (platform, platformRootDir, events) {
+function Api(platform, platformRootDir, events) {
     this.platform = PLATFORM;
     this.root = path.resolve(__dirname, '..');
 
@@ -72,9 +73,6 @@ function Api (platform, platformRootDir, events) {
         manifest: path.join(appMain, 'AndroidManifest.xml'),
         build: path.join(this.root, 'build'),
         javaSrc: path.join(appMain, 'java'),
-        // NOTE: Due to platformApi spec we need to return relative paths here
-        cordovaJs: 'bin/templates/project/assets/www/cordova.js',
-        cordovaJsSrc: 'cordova-js-src'
     };
 }
 
@@ -100,13 +98,14 @@ Api.createPlatform = function (destination, config, options, events) {
     events = setupEvents(events);
     var result;
     try {
-        result = require('../../lib/create').create(destination, config, options, events).then(function (destination) {
-            var PlatformApi = require(path.resolve(destination, 'cordova/Api'));
-            return new PlatformApi(PLATFORM, destination, events);
-        });
+        result = require('../../lib/create')
+            .create(destination, config, options, events)
+            .then(function (destination) {
+                return new Api(PLATFORM, destination, events);
+            });
     } catch (e) {
         events.emit('error', 'createPlatform is not callable from the android project API.');
-        throw (e);
+        throw e;
     }
     return result;
 };
@@ -131,13 +130,17 @@ Api.updatePlatform = function (destination, options, events) {
     events = setupEvents(events);
     var result;
     try {
-        result = require('../../lib/create').update(destination, options, events).then(function (destination) {
-            var PlatformApi = require(path.resolve(destination, 'cordova/Api'));
-            return new PlatformApi('android', destination, events);
-        });
+        result = require('../../lib/create')
+            .update(destination, options, events)
+            .then(function (destination) {
+                return new Api(PLATFORM, destination, events);
+            });
     } catch (e) {
-        events.emit('error', 'updatePlatform is not callable from the android project API, you will need to do this manually.');
-        throw (e);
+        events.emit(
+            'error',
+            'updatePlatform is not callable from the android project API, you will need to do this manually.',
+        );
+        throw e;
     }
     return result;
 };
@@ -174,6 +177,10 @@ Api.prototype.getPlatformInfo = function () {
  *   CordovaError instance.
  */
 Api.prototype.prepare = function (cordovaProject, prepareOptions) {
+    cordovaProject.projectConfig = new ConfigParser(
+        cordovaProject.locations.rootConfigXml || cordovaProject.projectConfig.path,
+    );
+
     return require('./lib/prepare').prepare.call(this, cordovaProject, prepareOptions);
 };
 
@@ -208,16 +215,28 @@ Api.prototype.addPlugin = function (plugin, installOptions) {
         installOptions.variables.PACKAGE_NAME = project.getPackageName();
     }
 
-    return Q().then(function () {
-        return PluginManager.get(self.platform, self.locations, project).addPlugin(plugin, installOptions);
-    }).then(function () {
-        if (plugin.getFrameworks(this.platform).length === 0) return;
-        selfEvents.emit('verbose', 'Updating build files since android plugin contained <framework>');
-        // This should pick the correct builder, not just get gradle
-        require('./lib/builders/builders').getBuilder().prepBuildFiles();
-    }.bind(this))
-        // CB-11022 Return truthy value to prevent running prepare after
-        .thenResolve(true);
+    return (
+        Q()
+            .then(function () {
+                return PluginManager.get(self.platform, self.locations, project).addPlugin(
+                    plugin,
+                    installOptions,
+                );
+            })
+            .then(
+                function () {
+                    if (plugin.getFrameworks(this.platform).length === 0) return;
+                    selfEvents.emit(
+                        'verbose',
+                        'Updating build files since android plugin contained <framework>',
+                    );
+                    // This should pick the correct builder, not just get gradle
+                    require('./lib/builders/builders').getBuilder().prepBuildFiles();
+                }.bind(this),
+            )
+            // CB-11022 Return truthy value to prevent running prepare after
+            .thenResolve(true)
+    );
 };
 
 /**
@@ -240,16 +259,23 @@ Api.prototype.removePlugin = function (plugin, uninstallOptions) {
         uninstallOptions.usePlatformWww = false;
     }
 
-    return PluginManager.get(this.platform, this.locations, project)
-        .removePlugin(plugin, uninstallOptions)
-        .then(function () {
-            if (plugin.getFrameworks(this.platform).length === 0) return;
+    return (
+        PluginManager.get(this.platform, this.locations, project)
+            .removePlugin(plugin, uninstallOptions)
+            .then(
+                function () {
+                    if (plugin.getFrameworks(this.platform).length === 0) return;
 
-            selfEvents.emit('verbose', 'Updating build files since android plugin contained <framework>');
-            require('./lib/builders/builders').getBuilder().prepBuildFiles();
-        }.bind(this))
-        // CB-11022 Return truthy value to prevent running prepare after
-        .thenResolve(true);
+                    selfEvents.emit(
+                        'verbose',
+                        'Updating build files since android plugin contained <framework>',
+                    );
+                    require('./lib/builders/builders').getBuilder().prepBuildFiles();
+                }.bind(this),
+            )
+            // CB-11022 Return truthy value to prevent running prepare after
+            .thenResolve(true)
+    );
 };
 
 /**
@@ -300,19 +326,22 @@ Api.prototype.removePlugin = function (plugin, uninstallOptions) {
 Api.prototype.build = function (buildOptions) {
     var self = this;
 
-    return require('./lib/check_reqs').run().then(function () {
-        return require('./lib/build').run.call(self, buildOptions);
-    }).then(function (buildResults) {
-        // Cast build result to array of build artifacts
-        return buildResults.apkPaths.map(function (apkPath) {
-            return {
-                buildType: buildResults.buildType,
-                buildMethod: buildResults.buildMethod,
-                path: apkPath,
-                type: 'apk'
-            };
+    return require('./lib/check_reqs')
+        .run()
+        .then(function () {
+            return require('./lib/build').run.call(self, buildOptions);
+        })
+        .then(function (buildResults) {
+            // Cast build result to array of build artifacts
+            return buildResults.paths.map(function (apkPath) {
+                return {
+                    buildType: buildResults.buildType,
+                    buildMethod: buildResults.buildMethod,
+                    path: apkPath,
+                    type: path.extname(apkPath).replace(/\./g, ''),
+                };
+            });
         });
-    });
 };
 
 /**
@@ -329,9 +358,11 @@ Api.prototype.build = function (buildOptions) {
  */
 Api.prototype.run = function (runOptions) {
     var self = this;
-    return require('./lib/check_reqs').run().then(function () {
-        return require('./lib/run').run.call(self, runOptions);
-    });
+    return require('./lib/check_reqs')
+        .run()
+        .then(function () {
+            return require('./lib/run').run.call(self, runOptions);
+        });
 };
 
 /**
@@ -348,11 +379,14 @@ Api.prototype.clean = function (cleanOptions) {
         cleanOptions = {};
     }
 
-    return require('./lib/check_reqs').run().then(function () {
-        return require('./lib/build').runClean.call(self, cleanOptions);
-    }).then(function () {
-        return require('./lib/prepare').clean.call(self, cleanOptions);
-    });
+    return require('./lib/check_reqs')
+        .run()
+        .then(function () {
+            return require('./lib/build').runClean.call(self, cleanOptions);
+        })
+        .then(function () {
+            return require('./lib/prepare').clean.call(self, cleanOptions);
+        });
 };
 
 /**

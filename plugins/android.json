@@ -1,18 +1,18 @@
 {
-  "prepare_queue": {
-    "installed": [],
-    "uninstalled": []
-  },
-  "config_munge": {
-    "files": {}
-  },
-  "installed_plugins": {
-    "cordova-plugin-whitelist": {
-      "PACKAGE_NAME": "com.cordova.react"
+    "prepare_queue": {
+        "installed": [],
+        "uninstalled": []
     },
-    "cordova-plugin-webpack": {
-      "PACKAGE_NAME": "com.cordova.react"
-    }
-  },
-  "dependent_plugins": {}
+    "config_munge": {
+        "files": {}
+    },
+    "installed_plugins": {
+        "cordova-plugin-webpack": {
+            "PACKAGE_NAME": "com.cordova.react"
+        },
+        "cordova-plugin-whitelist": {
+            "PACKAGE_NAME": "com.cordova.react"
+        }
+    },
+    "dependent_plugins": {}
 }

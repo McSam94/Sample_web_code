@@ -27,6 +27,12 @@
         color: var(--text-general);
         background-color: var(--background-general);
         flex: 9;
+
+        &--disabled {
+            cursor: pointer;
+            pointer-events: none;
+            color: var(--text-general);
+        }
     }
     &__icon {
         flex: 1;
@@ -39,10 +45,11 @@
         }
     }
     &__list {
-        transform: translateY(58%);
+        transform: translateY(40px);
         background-color: var(--background-general);
         transition: max-height 0.2s ease-out 0.1s, opacity 0.2s ease-out;
         opacity: 0;
+        z-index: 2;
         position: absolute;
         overflow: hidden;
         max-height: 0;
@@ -63,6 +70,13 @@
 
             &:hover {
                 background-color: var(--background-hover);
+            }
+        }
+        &-none {
+            cursor: auto;
+
+            &:hover {
+                background-color: var(--background-general);
             }
         }
     }
