@@ -1,14 +1,24 @@
 import React, { forwardRef, memo, useCallback, useEffect, useRef, useState } from 'react';
 import PropTypes from 'prop-types';
 import cn from 'classnames';
+import { useTranslation } from 'react-i18next';
 import Icon from '../icon/icon';
 import { useOnClickOutside } from '../hooks';
 import './dropdown.scss';
 
 const Dropdown = forwardRef(
-    ({ className, items, label, value, error, outline, underline, onChange }, ref) => {
+    (
+        { className, items, label, value, error, outline, underline, autoComplete, onChange },
+        ref,
+    ) => {
+        const { t } = useTranslation();
         const [selectedValue, setSelectedValue] = useState(value ?? '');
         const [shouldOpen, setshouldOpen] = useState(false);
+        const [filteredItems, setFilteredItems] = useState(items);
+        const [inputValue, setInputValue] = useState(
+            filteredItems.find((item) => item.value === value)?.label ?? '',
+        );
+        const iconRef = useRef(null);
 
         const onItemClick = useCallback(
             (value) => {
@@ -22,17 +32,46 @@ const Dropdown = forwardRef(
             setshouldOpen((prevState) => !prevState);
         }, []);
 
-        const closeDropdown = useCallback(() => {
+        const onTextChange = useCallback((event) => {
+            setInputValue(event.target.value);
+        }, []);
+
+        const closeDropdown = () => {
+            if (inputValue === '') {
+                setInputValue(items.find((item) => item.value === selectedValue).label ?? '');
+            }
+
             if (shouldOpen) {
                 toggleDropdown();
             }
-        }, [shouldOpen, toggleDropdown]);
+        };
 
-        useOnClickOutside(ref, closeDropdown);
+        const shouldIgnore = (event) => {
+            const path = event.path ?? event.composedPath?.();
+
+            return (
+                !iconRef.current?.contains(path?.[0]) &&
+                !path?.[0]?.className.includes('met-dropdown__list-item')
+            );
+        };
+
+        useOnClickOutside(ref, closeDropdown, shouldIgnore);
 
         useEffect(() => {
             setshouldOpen(false);
         }, [selectedValue]);
+
+        useEffect(() => {
+            if (autoComplete) {
+                setFilteredItems(
+                    items?.filter((item) => item.label.match(new RegExp(inputValue, 'gi'))),
+                );
+            }
+        }, [autoComplete, items, inputValue]);
+
+        useEffect(() => {
+            setInputValue(items.find((item) => item.value === selectedValue).label ?? '');
+        }, [items, selectedValue]);
 
         return (
             <div
@@ -55,12 +94,15 @@ const Dropdown = forwardRef(
                 </div>
                 <div className='met-dropdown__container' onClick={toggleDropdown}>
                     <input
-                        className='met-dropdown__input'
+                        className={cn('met-dropdown__input', {
+                            'met-dropdown__input--disabled': !autoComplete,
+                        })}
                         type='text'
-                        value={items.find((item) => item.value === selectedValue)?.label}
-                        onChange={() => {}}
+                        value={inputValue}
+                        onChange={onTextChange}
                     />
                     <Icon
+                        ref={iconRef}
                         className={cn('met-dropdown__icon', {
                             'met-dropdown__icon--opened': shouldOpen,
                         })}
@@ -72,16 +114,25 @@ const Dropdown = forwardRef(
                         'met-dropdown__list--opened': shouldOpen,
                     })}
                 >
-                    {items.map((item, idx) => (
-                        <div
-                            key={idx}
-                            className='met-dropdown__list-item'
-                            onClick={() => onItemClick(item.value)}
-                        >
-                            {item.label}
+                    {filteredItems.length ? (
+                        <>
+                            {filteredItems.map((item, idx) => (
+                                <div
+                                    key={idx}
+                                    className='met-dropdown__list-item'
+                                    onClick={() => onItemClick(item.value)}
+                                >
+                                    {item.label}
+                                </div>
+                            ))}
+                        </>
+                    ) : (
+                        <div className='met-dropdown__list-item met-dropdown__list-none'>
+                            {t('components.dropdown.no-item')}
                         </div>
-                    ))}
+                    )}
                 </div>
+                {error && <span className='error'>{error}</span>}
             </div>
         );
     },
@@ -95,12 +146,14 @@ Dropdown.propTypes = {
     value: PropTypes.string,
     outline: PropTypes.bool,
     underline: PropTypes.bool,
+    autoComplete: PropTypes.bool,
     onChange: PropTypes.func,
 };
 
 Dropdown.defaultProps = {
     outline: true,
     underline: false,
+    autoComplete: false,
 };
 
 export default memo(Dropdown);

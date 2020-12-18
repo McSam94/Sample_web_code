@@ -36,7 +36,7 @@ const Setting = () => {
                 onChange={updateLang}
             />
 
-            <Slider className='about__element' min={1} max={100} unit='s' />
+            <Slider className='about__element' min={0} max={100} unit='s' />
 
             <Button primary className='about__logout about__element' onClick={logout}>
                 {t('setting.logout')}
