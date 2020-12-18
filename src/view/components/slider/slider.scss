@@ -9,6 +9,7 @@
         flex-direction: row;
         justify-content: space-between;
         font-size: var(--text-size-xs);
+        color: var(--text-general);
 
         &-min {
         }
@@ -20,6 +21,7 @@
         position: absolute;
         transform: translateX(-50%);
         font-size: var(--text-size-xs);
+        color: var(--text-general);
 
         &-container {
             position: relative;
@@ -31,13 +33,13 @@
         height: 2.2rem;
         width: 2.2rem;
         transform: translate(-50%, -8%) !important;
-        background-color: var(--background-general);
+        background-color: $color-white;
         border: solid 0.4rem $color-darkblue;
 
         &:active,
         &:hover,
         &:focus {
-            background-color: var(--background-general);
+            background-color: $color-white;
             border: solid 0.4rem $color-darkblue;
             box-shadow: none;
         }

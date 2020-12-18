@@ -4,6 +4,7 @@
 -   [Structure](#structure)
 -   [Script](#scripts)
 -   [Development](#development)
+-   [Debugging](#debugging)
 -   [References](#references)
 
 <br />
@@ -134,6 +135,10 @@ const CustomComponent = () => {
     )
 }
 ```
+
+## Debugging
+
+If you're using chrome. You're recommended to download this [chrome extension](https://chrome.google.com/webstore/detail/react-context-devtool/oddhnidmicpefilikhgeagedibnefkcf) to help you inspect the store state changes
 
 ## References
 
