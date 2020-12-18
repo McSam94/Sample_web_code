@@ -1,11 +1,69 @@
 @font-face {
     font-family: 'Metlife Circular';
     font-weight: normal;
+    font-style: normal;
     src: url('../assets/fonts/MetLifeCircular-Normal.otf') format('opentype');
+}
+
+@font-face {
+    font-family: 'Metlife Circular';
+    font-weight: normal;
+    font-style: italic;
+    src: url('../assets/fonts/MetLifeCircular-NormalItalic.otf') format('opentype');
+}
+
+@font-face {
+    font-family: 'Metlife Circular';
+    font-weight: bold;
+    font-style: normal;
+    src: url('../assets/fonts/MetLifeCircular-Bold.otf') format('opentype');
+}
+
+@font-face {
+    font-family: 'Metlife Circular';
+    font-weight: bold;
+    font-style: italic;
+    src: url('../assets/fonts/MetLifeCircular-BoldItalic.otf') format('opentype');
+}
+
+@font-face {
+    font-family: 'Metlife Circular';
+    font-weight: lighter;
+    font-style: normal;
+    src: url('../assets/fonts/MetLifeCircular-Light.otf') format('opentype');
+}
+
+@font-face {
+    font-family: 'Metlife Circular';
+    font-weight: lighter;
+    font-style: italic;
+    src: url('../assets/fonts/MetLifeCircular-LightItalic.otf') format('opentype');
 }
 
 @font-face {
     font-family: 'Noto Sans';
     font-weight: normal;
+    font-style: normal;
     src: url('../assets/fonts/NotoSans-Regular.ttf') format('truetype');
+}
+
+@font-face {
+    font-family: 'Noto Sans';
+    font-weight: normal;
+    font-style: italic;
+    src: url('../assets//fonts/NotoSans-Italic.ttf') format(('truetype'));
+}
+
+@font-face {
+    font-family: 'Noto Sans';
+    font-weight: bold;
+    font-style: normal;
+    src: url('../assets//fonts/NotoSans-Bold.ttf') format(('truetype'));
+}
+
+@font-face {
+    font-family: 'Noto Sans';
+    font-weight: bold;
+    font-style: italic;
+    src: url('../assets//fonts/NotoSans-BoldItalic.ttf') format(('truetype'));
 }

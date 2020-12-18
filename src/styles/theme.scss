@@ -32,7 +32,7 @@
         --border-general: #{$color-darkgray};
 
         --background-general: #{$color-white};
-        --background-hover: #{$color-lightgray};
+        --background-hover: #{$color-hover};
     }
     .theme--dark {
         --text-general: #{$color-white};
@@ -43,6 +43,6 @@
         --border-general: #{$color-darkgray};
 
         --background-general: #{$color-black};
-        --background-hover: #{$color-lightgray};
+        --background-hover: #{$color-hover};
     }
 }
