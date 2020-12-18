@@ -21,7 +21,7 @@ module.exports = {
     rules: {
         'no-unused-vars': ['warn', { args: 'none', argsIgnorePattern: 'req|res|next|val' }],
         'prettier/prettier': ['error'],
-        'react/display-name': 0,
+        'react/display-name': ['off'],
     },
     settings: {
         react: {
