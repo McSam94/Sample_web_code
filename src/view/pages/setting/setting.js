@@ -49,7 +49,7 @@ const Setting = () => {
                 className='about__element'
                 message1='A payment on your dental policy is overdue.'
                 message2={
-                    <div className='about__notification'>
+                    <div>
                         Click <a href='/'>here</a> to make a payment
                     </div>
                 }

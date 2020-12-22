@@ -37,17 +37,47 @@ const Notification = ({ className, type, message1, message2 }) => {
                 className,
             )}
         >
-            <div className='met-notification__message'>
-                <Icon name={getIconType(type)} className='met-notification__icon' isForceDarkMode />
-                <div className='met-notification__text'>{message1}</div>
-                {message2}
-            </div>
-            <Icon
-                className='met-notification__close'
-                name='close'
-                isForceDarkMode
-                onClick={closeNotification}
-            />
+            {window.hasOwnProperty('cordova') ? (
+                <div className='met-notification__container'>
+                    <Icon
+                        name={getIconType(type)}
+                        className='met-notification__icon'
+                        isForceDarkMode
+                    />
+                    <div className='met-notification__content'>
+                        <div className='met-notification__message--mobile'>
+                            <div className='met-notification__text met-notification__text--mobile'>
+                                {message1}
+                            </div>
+                            {message2}
+                        </div>
+                        <Icon
+                            className='met-notification__close'
+                            name='close'
+                            isForceDarkMode
+                            onClick={closeNotification}
+                        />
+                    </div>
+                </div>
+            ) : (
+                <>
+                    <div className='met-notification__message'>
+                        <Icon
+                            name={getIconType(type)}
+                            className='met-notification__icon'
+                            isForceDarkMode
+                        />
+                        <div className='met-notification__text'>{message1}</div>
+                        {message2}
+                    </div>
+                    <Icon
+                        className='met-notification__close'
+                        name='close'
+                        isForceDarkMode
+                        onClick={closeNotification}
+                    />
+                </>
+            )}
         </div>
     );
 };
