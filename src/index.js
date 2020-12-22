@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom';
 import { BrowserRouter } from 'react-router-dom';
 import { debugContextDevtool } from 'react-context-devtool';
 import { Providers } from 'Stores';
+import { Loader } from 'Components';
 import App from './App';
 import './i18n';
 
@@ -12,7 +13,7 @@ const initRender = () => {
     // eslint-disable-next-line react/no-render-return-value
     ReactDOM.render(
         <StrictMode>
-            <Suspense fallback='Loading...'>
+            <Suspense fallback={<Loader />}>
                 <Providers>
                     <BrowserRouter>
                         <App />
