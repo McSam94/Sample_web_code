@@ -18,6 +18,9 @@
     &--invisible {
         display: none;
     }
+    &__icon {
+        margin-right: 1rem;
+    }
     &__message {
         display: flex;
         flex-direction: row;

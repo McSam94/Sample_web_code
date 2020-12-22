@@ -1,4 +1,4 @@
-import React, { memo, useState } from 'react';
+import React, { memo, useCallback, useState } from 'react';
 import PropTypes from 'prop-types';
 import cn from 'classnames';
 import Icon from '../icon/icon';
@@ -7,9 +7,22 @@ import './notification.scss';
 const Notification = ({ className, type, message1, message2 }) => {
     const [isVisible, setIsVisible] = useState(true);
 
-    const closeNotification = () => {
+    const closeNotification = useCallback(() => {
         setIsVisible(false);
-    };
+    }, []);
+
+    const getIconType = useCallback((messageType) => {
+        switch (messageType) {
+            case 'error':
+                return 'exclamation';
+            case 'info':
+                return 'info';
+            case 'feedback':
+                return 'check';
+            default:
+                return 'check';
+        }
+    }, []);
 
     return (
         <div
@@ -25,6 +38,7 @@ const Notification = ({ className, type, message1, message2 }) => {
             )}
         >
             <div className='met-notification__message'>
+                <Icon name={getIconType(type)} className='met-notification__icon' isForceDarkMode />
                 <div className='met-notification__text'>{message1}</div>
                 {message2}
             </div>
