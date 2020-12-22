@@ -1,0 +1,126 @@
+// generic transform
+@mixin transform($transforms) {
+    -moz-transform: $transforms;
+    -ms-transform: $transforms;
+    -webkit-transform: $transforms;
+    transform: $transforms;
+}
+//transform origin
+@mixin transform-origin($origin) {
+    -moz-transform-origin: $origin;
+    -ms-transform-origin: $origin;
+    -webkit-transform-origin: $origin;
+    transform-origin: $origin;
+}
+
+.met-loader {
+    font-size: 48px;
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    left: 0;
+    top: 0;
+    background: rgba(0, 0, 0, 0.2);
+    z-index: 10;
+    &__spinner {
+        position: absolute;
+        left: 50%;
+        top: 51%;
+        z-index: 11;
+        width: 0.074em;
+        height: 0.2777em;
+        border-radius: 0.0555em;
+        background-color: transparent;
+        @include transform-origin(center -0.2222em);
+        -webkit-animation: spinner-fade 1s infinite linear;
+        animation: spinner-fade 1s infinite linear;
+        &:nth-child(1) {
+            -webkit-animation-delay: 0s;
+            -ms-animation-delay: 0s;
+            animation-delay: 0s;
+            @include transform(rotate(0deg));
+        }
+        &:nth-child(2) {
+            -webkit-animation-delay: 0.083s;
+            -ms-animation-delay: 0.083s;
+            animation-delay: 0.083s;
+            @include transform(rotate(30deg));
+        }
+        &:nth-child(3) {
+            -webkit-animation-delay: 0.166s;
+            -ms-animation-delay: 0.166s;
+            animation-delay: 0.166s;
+            @include transform(rotate(60deg));
+        }
+        &:nth-child(4) {
+            -webkit-animation-delay: 0.249s;
+            -ms-animation-delay: 0.249s;
+            animation-delay: 0.249s;
+            @include transform(rotate(90deg));
+        }
+        &:nth-child(5) {
+            -webkit-animation-delay: 0.332s;
+            -ms-animation-delay: 0.332s;
+            animation-delay: 0.332s;
+            @include transform(rotate(120deg));
+        }
+        &:nth-child(6) {
+            -webkit-animation-delay: 0.415s;
+            -ms-animation-delay: 0.415s;
+            animation-delay: 0.415s;
+            @include transform(rotate(150deg));
+        }
+        &:nth-child(7) {
+            -webkit-animation-delay: 0.498s;
+            -ms-animation-delay: 0.498s;
+            animation-delay: 0.498s;
+            @include transform(rotate(180deg));
+        }
+        &:nth-child(8) {
+            -webkit-animation-delay: 0.581s;
+            -ms-animation-delay: 0.581s;
+            animation-delay: 0.581s;
+            @include transform(rotate(210deg));
+        }
+        &:nth-child(9) {
+            -webkit-animation-delay: 0.664s;
+            -ms-animation-delay: 0.664s;
+            animation-delay: 0.664s;
+            @include transform(rotate(240deg));
+        }
+        &:nth-child(10) {
+            -webkit-animation-delay: 0.747s;
+            -ms-animation-delay: 0.747s;
+            animation-delay: 0.747s;
+            @include transform(rotate(270deg));
+        }
+        &:nth-child(11) {
+            -webkit-animation-delay: 0.83s;
+            -ms-animation-delay: 0.83s;
+            animation-delay: 0.83s;
+            @include transform(rotate(300deg));
+        }
+        &:nth-child(12) {
+            -webkit-animation-delay: 0.913s;
+            -ms-animation-delay: 0.913s;
+            animation-delay: 0.913s;
+            @include transform(rotate(330deg));
+        }
+    }
+}
+@-webkit-keyframes spinner-fade {
+    0% {
+        background-color: $color-blue1;
+    }
+    100% {
+        background-color: transparent;
+    }
+}
+@keyframes spinner-fade {
+    0% {
+        background-color: $color-blue1;
+    }
+    100% {
+        background-color: transparent;
+    }
+}

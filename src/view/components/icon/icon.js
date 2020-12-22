@@ -5,7 +5,7 @@ import { UiContext } from 'Stores';
 import GetIcon from './import';
 import './icon.scss';
 
-const Icon = forwardRef(({ name, className, onClick }, ref) => {
+const Icon = forwardRef(({ name, className, onClick, isForceDarkMode }, ref) => {
     const { isDarkMode } = useContext(UiContext);
 
     return (
@@ -13,7 +13,7 @@ const Icon = forwardRef(({ name, className, onClick }, ref) => {
             ref={ref}
             onClick={onClick}
             className={cn('met-icon', className)}
-            src={GetIcon(name, isDarkMode)}
+            src={GetIcon(name, isForceDarkMode ?? isDarkMode)}
             alt={name}
         />
     );
@@ -22,6 +22,8 @@ const Icon = forwardRef(({ name, className, onClick }, ref) => {
 Icon.propTypes = {
     name: PropTypes.string.isRequired,
     className: PropTypes.string,
+    onClick: PropTypes.func,
+    isForceDarkMode: PropTypes.bool,
     onClick: PropTypes.func,
 };
 

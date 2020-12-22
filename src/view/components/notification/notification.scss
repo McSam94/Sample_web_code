@@ -1,0 +1,41 @@
+.met-notification {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.5rem 1rem;
+    min-width: 60rem;
+
+    &--error {
+        background-color: $color-berry;
+    }
+    &--info {
+        background-color: $color-darkblue;
+    }
+    &--feedback {
+        background-color: $color-green;
+    }
+    &--invisible {
+        display: none;
+    }
+    &__message {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        color: $color-white;
+        font-size: var(--text-size-xs);
+
+        & a {
+            text-decoration: underline !important;
+            color: $color-white !important;
+        }
+    }
+    &__close {
+        width: 1.2rem;
+        height: 1.2rem;
+        cursor: pointer;
+    }
+    &__text {
+        font-weight: bold;
+    }
+}
