@@ -5,6 +5,7 @@ import { CommonSrv } from 'Services';
 
 export const uiAction = Object.freeze({
     TOGGLE_DARK_MODE: 'toggleDarkMode',
+    TOAST: createRequestAction('toast'),
     VERSION: createRequestAction('version'),
 });
 
@@ -36,6 +37,40 @@ export const getVersion = (dispatch) => {
                 dispatch({ type: uiAction.VERSION.FAIL });
             }
         },
+        [dispatch],
+    );
+};
+
+export const toast = (dispatch) => {
+    return useCallback(
+        (toastConfig) => {
+            dispatch({
+                type: uiAction.TOAST.REQUEST,
+                params: {
+                    toastConfig,
+                },
+            });
+
+            try {
+                setTimeout(() => {
+                    dispatch({
+                        type: uiAction.TOAST.SUCCESS,
+                    });
+                }, toastConfig?.duration ?? 1500);
+            } catch (error) {
+                dispatch({ type: uiAction.TOAST.FAIL });
+            }
+        },
+        [dispatch],
+    );
+};
+
+export const closeToast = (dispatch) => {
+    return useCallback(
+        () =>
+            dispatch({
+                type: uiAction.TOAST.SUCCESS,
+            }),
         [dispatch],
     );
 };

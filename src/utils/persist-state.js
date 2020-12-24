@@ -10,8 +10,7 @@ export const getInitialState = (storageKey) => {
         }
         return JSON.parse(savedState || '{}');
     } catch (e) {
-        console.error(`Error loading state : ${storageKey}`);
-        return undefined;
+        throw new Error(e);
     }
 };
 

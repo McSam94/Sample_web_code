@@ -2,11 +2,22 @@ import React, { useContext, useCallback, useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
 import { UiContext, AuthContext } from 'Stores';
-import { Button, Dropdown, Slider, Loader, Notification } from 'Components';
+import { Button, Dropdown, Slider, Loader } from 'Components';
 import './setting.scss';
 
+const LANGUAGE = [
+    {
+        label: 'English',
+        value: 'en',
+    },
+    {
+        label: 'Korean',
+        value: 'kr',
+    },
+];
+
 const Setting = () => {
-    const { toggleDarkMode } = useContext(UiContext);
+    const { toggleDarkMode, toast } = useContext(UiContext);
     const { logout } = useContext(AuthContext);
     const { t, i18n } = useTranslation();
     const [isLoading, setIsLoading] = useState(true);
@@ -19,6 +30,17 @@ const Setting = () => {
         }, 1000);
     }, []);
 
+    const toastTest = useCallback(() => {
+        toast({
+            message1: 'A payment on your dental policy is overdue.',
+            message2: 'Click {{here}} to make a payment',
+            link: '/',
+            type: 'error',
+            position: 'bottom-right',
+            duration: 2500,
+        });
+    }, [toast]);
+
     return (
         <div className='about'>
             <Link to='/'>⬅ back</Link>
@@ -28,16 +50,7 @@ const Setting = () => {
 
             <Dropdown
                 className='about__language about__element'
-                items={[
-                    {
-                        label: 'English',
-                        value: 'en',
-                    },
-                    {
-                        label: 'Korean',
-                        value: 'kr',
-                    },
-                ]}
+                items={LANGUAGE}
                 value={i18n.language}
                 label='Language'
                 onChange={updateLang}
@@ -45,18 +58,11 @@ const Setting = () => {
 
             <Slider className='about__element' min={0} max={100} unit='s' />
 
-            <Notification
-                className='about__element'
-                message1='A payment on your dental policy is overdue.'
-                message2={
-                    <div>
-                        Click <a href='/'>here</a> to make a payment
-                    </div>
-                }
-                type='error'
-            />
-
             <Loader isLoading={isLoading} />
+
+            <Button primary className='about__element' onClick={toastTest}>
+                Toast
+            </Button>
 
             <Button primary className='about__logout about__element' onClick={logout}>
                 {t('setting.logout')}

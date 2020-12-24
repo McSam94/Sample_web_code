@@ -2,4 +2,5 @@ node_modules
 www/index.bundle.js
 www/*.otf
 www/*.ttf
+www/*png
 .DS_Store

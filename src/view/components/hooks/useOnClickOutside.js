@@ -22,5 +22,5 @@ export const useOnClickOutside = (ref, handler, validationFn) => {
             document.removeEventListener('mousedown', listener);
             document.removeEventListener('touchstart', listener);
         };
-    }, [ref, handler]);
+    }, [ref, handler, validationFn]);
 };

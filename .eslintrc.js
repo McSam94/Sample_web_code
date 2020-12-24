@@ -19,7 +19,11 @@ module.exports = {
     },
     ignorePatterns: ['/node_modules/**', '/www/index.bundle.js'],
     rules: {
-        'no-unused-vars': ['warn', { args: 'none', argsIgnorePattern: 'req|res|next|val' }],
+        'no-unused-vars': ['error', { args: 'none', argsIgnorePattern: 'req|res|next|val' }],
+        semi: 'error',
+        'no-use-before-define': 'error',
+        'prefer-const': 'error',
+        'no-console': 'warn',
         'prettier/prettier': ['error'],
         'react/display-name': ['off'],
     },

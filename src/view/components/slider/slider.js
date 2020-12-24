@@ -27,15 +27,16 @@ const Slider = forwardRef(
         }, [currentValue, max, min]);
 
         return (
-            <div className={cn('met-slider', className)} ref={ref}>
+            <div data-testid='slider-container' className={cn('met-slider', className)} ref={ref}>
                 <div className='met-slider__value-container'>
                     <span
+                        data-testid='slider-value'
                         className='met-slider__value'
                         style={{
                             left: `${valuePosition}%`,
                         }}
                     >
-                        {currentValue}
+                        {`${currentValue}${unit}`}
                     </span>
                 </div>
                 <RCSlider
@@ -44,6 +45,7 @@ const Slider = forwardRef(
                     value={currentValue}
                     handle={({ className, dragging, ...handleProps }) => (
                         <Handle
+                            data-testid='slider-handler'
                             className={cn('met-slider__handler', className)}
                             dragging={dragging.toString()}
                             {...handleProps}
@@ -57,9 +59,19 @@ const Slider = forwardRef(
                     {...props}
                 />
                 <div className='met-slider__description'>
-                    <span className='met-slider__description-min'>{`${min}${unit ?? ''}`}</span>
-                    {error && <span className='error'>{error}</span>}
-                    <span className='met-slider__description-max'>{`${max}${unit ?? ''}`}</span>
+                    <span
+                        data-testid='slider-min'
+                        className='met-slider__description-min'
+                    >{`${min}${unit ?? ''}`}</span>
+                    {error && (
+                        <span data-testid='slider-error' className='error'>
+                            {error}
+                        </span>
+                    )}
+                    <span
+                        data-testid='slider-max'
+                        className='met-slider__description-max'
+                    >{`${max}${unit ?? ''}`}</span>
                 </div>
             </div>
         );

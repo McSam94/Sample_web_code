@@ -4,9 +4,10 @@ import { Link } from 'react-router-dom';
 import cn from 'classnames';
 import './button.scss';
 
-const ButtonDiv = memo(({ onClick, className, children, primary, secondary, ...props }) => {
+const ButtonDiv = memo(({ onClick, className, children, primary, secondary, testId, ...props }) => {
     return (
         <button
+            data-testid={testId ?? 'button-container'}
             className={cn(
                 'met-button',
                 {
@@ -18,7 +19,11 @@ const ButtonDiv = memo(({ onClick, className, children, primary, secondary, ...p
             onClick={onClick}
             {...props}
         >
-            {typeof children === 'string' ? <span>{children.toUpperCase()}</span> : children}
+            {typeof children === 'string' ? (
+                <span data-testid='button-text'>{children.toUpperCase()}</span>
+            ) : (
+                children
+            )}
         </button>
     );
 });
@@ -30,6 +35,7 @@ ButtonDiv.propTypes = {
     onClick: PropTypes.func,
     primary: PropTypes.bool,
     secondary: PropTypes.bool,
+    testId: PropTypes.string,
 };
 
 ButtonDiv.defaultProps = {

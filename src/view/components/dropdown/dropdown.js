@@ -8,7 +8,18 @@ import './dropdown.scss';
 
 const Dropdown = forwardRef(
     (
-        { className, items, label, value, error, outline, underline, autoComplete, onChange },
+        {
+            className,
+            items,
+            label,
+            value,
+            error,
+            outline,
+            underline,
+            autoComplete,
+            onChange,
+            testId,
+        },
         ref,
     ) => {
         const { t } = useTranslation();
@@ -76,6 +87,7 @@ const Dropdown = forwardRef(
         return (
             <div
                 ref={ref}
+                data-testid={testId ?? 'dropdown-container'}
                 className={cn(
                     'met-dropdown',
                     {
@@ -86,6 +98,7 @@ const Dropdown = forwardRef(
                 )}
             >
                 <div
+                    data-testid='dropdown-label'
                     className={cn('met-dropdown__label', {
                         'met-dropdown__label--error': error,
                     })}
@@ -94,6 +107,7 @@ const Dropdown = forwardRef(
                 </div>
                 <div className='met-dropdown__container' onClick={toggleDropdown}>
                     <input
+                        data-testid='dropdown-input'
                         className={cn('met-dropdown__input', {
                             'met-dropdown__input--disabled': !autoComplete,
                         })}
@@ -103,6 +117,7 @@ const Dropdown = forwardRef(
                     />
                     <Icon
                         ref={iconRef}
+                        testId='dropdown-icon'
                         className={cn('met-dropdown__icon', {
                             'met-dropdown__icon--opened': shouldOpen,
                         })}
@@ -110,6 +125,7 @@ const Dropdown = forwardRef(
                     />
                 </div>
                 <div
+                    data-testid='dropdown-list'
                     className={cn('met-dropdown__list', {
                         'met-dropdown__list--opened': shouldOpen,
                     })}
@@ -132,7 +148,11 @@ const Dropdown = forwardRef(
                         </div>
                     )}
                 </div>
-                {error && <span className='error'>{error}</span>}
+                {error && (
+                    <span data-testid='dropdown-error' className='error'>
+                        {error}
+                    </span>
+                )}
             </div>
         );
     },
@@ -148,6 +168,7 @@ Dropdown.propTypes = {
     underline: PropTypes.bool,
     autoComplete: PropTypes.bool,
     onChange: PropTypes.func,
+    testId: PropTypes.string,
 };
 
 Dropdown.defaultProps = {

@@ -33,7 +33,6 @@ export const login = (dispatch) => {
                     });
                 }
             } catch (error) {
-                console.error(`login -> error: ${error}`);
                 dispatch({
                     type: authAction.LOGIN.FAIL,
                     errorMsh: error?.data?.error,

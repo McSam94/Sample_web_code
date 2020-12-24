@@ -25,6 +25,23 @@ export const UIReducer = (state, action) => {
                 isGettingVersion: false,
                 isGotVersion: false,
             };
+        case uiAction.TOAST.REQUEST:
+            return {
+                ...state,
+                isToastVisible: true,
+                toastConfig: action?.params?.toastConfig,
+            };
+        case uiAction.TOAST.SUCCESS:
+            return {
+                ...state,
+                isToastVisible: false,
+            };
+        case uiAction.TOAST.FAIL:
+            return {
+                ...state,
+                isToastVisible: false,
+                toastConfig: {},
+            };
         default:
             return state;
     }

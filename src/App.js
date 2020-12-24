@@ -2,6 +2,7 @@ import React, { useContext } from 'react';
 import cn from 'classnames';
 import { UiContext } from 'Stores';
 import Navigation from 'Navigations';
+import { Notification } from 'Components';
 import './App.scss';
 
 const App = () => {
@@ -15,6 +16,7 @@ const App = () => {
             })}
         >
             <Navigation />
+            <Notification className='servicing-app__notification' />
         </div>
     );
 };

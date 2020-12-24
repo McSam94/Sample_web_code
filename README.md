@@ -143,5 +143,6 @@ If you're using chrome. You're recommended to download this [chrome extension](h
 ## References
 
 -   [React Cordova](https://cuneyt.aliustaoglu.biz/en/setting-up-a-cordova-react-application-from-stratch/)
+-   [React Unit Testing](https://www.freecodecamp.org/news/testing-react-hooks/)
 -   [Eslint & Prettier](https://dev-yakuza.github.io/en/react-native/eslint-prettier-husky-lint-staged/)
 -   [Translation](https://react.i18next.com/guides/quick-start)

@@ -1,4 +1,6 @@
 .met-notification {
+    $this: '.met-notification';
+    position: absolute;
     display: flex;
     flex-direction: row;
     justify-content: space-between;
@@ -7,6 +9,25 @@
     max-width: 60rem;
     width: 100%;
 
+    &--mobile {
+        max-width: 25rem;
+    }
+    &--bottom-right {
+        bottom: 1rem;
+        right: 1rem;
+    }
+    &--top-right {
+        top: 1rem;
+        right: 1rem;
+    }
+    &--bottom-left {
+        bottom: 1rem;
+        left: 1rem;
+    }
+    &--top-left {
+        top: 1rem;
+        left: 1rem;
+    }
     &--error {
         background-color: $color-berry;
     }
@@ -16,8 +37,29 @@
     &--feedback {
         background-color: $color-green;
     }
+    &--visible {
+        opacity: 1;
+        transition: transform 0.2s linear, opacity 0.2s linear;
+    }
     &--invisible {
-        display: none;
+        opacity: 0;
+        transition: transform 0.2s linear, opacity 0.2s linear;
+    }
+    &__top {
+        &#{$this}--invisible {
+            transform: translateY(-100%);
+        }
+        &#{$this}--visible {
+            transform: translateY(0);
+        }
+    }
+    &__bottom {
+        &#{$this}--invisible {
+            transform: translateY(100%);
+        }
+        &#{$this}--visible {
+            transform: translateY(0);
+        }
     }
     &__container {
         display: flex;
@@ -44,17 +86,6 @@
             flex-direction: column;
             color: $color-white;
             font-size: var(--text-size-xxxs);
-
-            & a {
-                text-decoration: underline !important;
-                color: $color-white !important;
-                font-size: var(--text-size-xxs) !important;
-            }
-        }
-        & a {
-            text-decoration: underline !important;
-            color: $color-white !important;
-            font-size: var(--text-size-xs) !important;
         }
     }
     &__close {
@@ -71,5 +102,15 @@
         &--mobile {
             margin-bottom: 1rem;
         }
+    }
+    &__subtext {
+        font-weight: normal;
+        color: $color-white;
+        font-size: var(--text-size-xxs);
+    }
+    &__link {
+        text-decoration: underline;
+        color: $color-white;
+        font-size: var(--text-size-xxs);
     }
 }
