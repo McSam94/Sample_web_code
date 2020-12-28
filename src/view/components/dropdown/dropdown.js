@@ -49,7 +49,7 @@ const Dropdown = forwardRef(
 
         const closeDropdown = () => {
             if (inputValue === '') {
-                setInputValue(items.find((item) => item.value === selectedValue).label ?? '');
+                setInputValue(items.find((item) => item.value === selectedValue)?.label ?? '');
             }
 
             if (shouldOpen) {
@@ -81,7 +81,7 @@ const Dropdown = forwardRef(
         }, [autoComplete, items, inputValue]);
 
         useEffect(() => {
-            setInputValue(items.find((item) => item.value === selectedValue).label ?? '');
+            setInputValue(items.find((item) => item.value === selectedValue)?.label ?? '');
         }, [items, selectedValue]);
 
         return (

@@ -17,11 +17,11 @@ export const toggleDarkMode = (dispatch) => {
 
 export const getVersion = (dispatch) => {
     return useCallback(
-        async (token) => {
+        async (cancelToken) => {
             dispatch({ type: uiAction.VERSION.REQUEST });
 
             try {
-                const result = await CommonSrv.version(token);
+                const result = await CommonSrv.version(cancelToken);
 
                 if (result?.status === RESPONSE_STATUS.SUCCESS) {
                     dispatch({

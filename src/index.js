@@ -24,7 +24,7 @@ const initRender = () => {
         appContainer,
     );
 
-    if (!window.hasOwnProperty('cordova')) {
+    if (!window.hasOwnProperty('cordova') && !window.Cypress) {
         debugContextDevtool(appContainer, {
             debugReducer: true,
             debugContext: true,

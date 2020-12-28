@@ -32,6 +32,7 @@ export const AuthReducer = (state, action) => {
                 ...state,
                 isLoggingOut: false,
                 isLoggedOut: true,
+                isLoggedIn: false,
                 token: '',
             };
         case authAction.LOGOUT.FAIL:

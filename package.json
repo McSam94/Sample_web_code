@@ -10,7 +10,8 @@
         "android": "cordova prepare android && cordova run android -- --livereload",
         "lint": "eslint --fix src/",
         "format": "prettier --write src/",
-        "test": "jest src/ --config ./jest.config.js"
+        "test": "jest src/ --config ./jest.config.js",
+        "cypress": "node_modules/.bin/cypress open"
     },
     "husky": {
         "hooks": {
@@ -57,6 +58,7 @@
         "babel-loader": "^8.0.6",
         "cordova-plugin-whitelist": "^1.3.4",
         "css-loader": "^5.0.1",
+        "cypress": "^6.2.0",
         "enzyme": "^3.11.0",
         "enzyme-adapter-react-16": "^1.15.5",
         "enzyme-to-json": "^3.6.1",

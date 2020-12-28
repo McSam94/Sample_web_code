@@ -1,26 +1,21 @@
 import React, { memo, useCallback, useContext, useEffect } from 'react';
-import Axios from 'axios';
 import { useForm } from 'react-hook-form';
 import { useHistory } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Input, Button } from 'Components';
 import { AuthContext, UiContext } from 'Stores';
+import { useApi } from '../hooks';
 import './login.scss';
 
 const Login = () => {
     const history = useHistory();
     const { t } = useTranslation();
     const { register, handleSubmit, errors } = useForm();
-    const { login, token } = useContext(AuthContext);
+    const { login, token, isLoggingIn, isLoggedIn } = useContext(AuthContext);
     const { getVersion, version } = useContext(UiContext);
     const onSubmit = useCallback(({ username, password }) => login(username, password), [login]);
 
-    useEffect(() => {
-        const source = Axios.CancelToken.source();
-        getVersion(source.token);
-
-        return () => source.cancel();
-    }, [getVersion]);
+    useApi(getVersion);
 
     useEffect(() => {
         if (token) {
@@ -32,10 +27,11 @@ const Login = () => {
         <div className='login'>
             <form className='login__container' onSubmit={handleSubmit(onSubmit)}>
                 <Input
+                    data-testid='login-username'
                     className='login__field'
                     name='username'
                     label={t('login.username')}
-                    value='saikhuan'
+                    value=''
                     placeholder='Username'
                     ref={register({
                         required: t('login.validation.username'),
@@ -44,11 +40,12 @@ const Login = () => {
                     outline
                 />
                 <Input
+                    data-testid='login-password'
                     className='login__field'
                     name='password'
                     label={t('login.password')}
                     type='password'
-                    value='password'
+                    value=''
                     placeholder='Password'
                     ref={register({
                         required: t('login.validation.password'),
@@ -57,8 +54,8 @@ const Login = () => {
                     outline
                 />
                 {version && <p className='login__version'>v{version}</p>}
-                <Button className='login__button' type='submit'>
-                    {t('login.login')}
+                <Button data-testid='login-button' className='login__button' type='submit'>
+                    {isLoggingIn || isLoggedIn ? 'Logging In' : t('login.login')}
                 </Button>
             </form>
         </div>

@@ -6,6 +6,10 @@ module.exports = {
         '^Stores(.*)$': '<rootDir>/src/store',
         '^Utils(.*)$': '<rootDir>/src/utils',
         '^Services(.*)$': '<rootDir>/src/services',
+        '^Navigation(.*)$': '<rootDir>/src/navigation',
+        '^Pages(.*)$': '<rootDir>/src/view/pages',
+        '^Components(.*)$': '<rootDir>/src/view/components',
+        '^Images(.*)$': '<rootDir>/src/assets/images',
         '^Icons(.*)$': '<rootDir>/src/assets/icons',
     },
 };

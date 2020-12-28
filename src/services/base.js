@@ -15,7 +15,7 @@ const apiClient = Axios.create({
 
 apiClient.interceptors.request.use(
     (config) => {
-        const { token } = getInitialState('AuthStore');
+        const { token } = getInitialState('AuthStore') ?? { token: '' };
 
         if (token) {
             return {

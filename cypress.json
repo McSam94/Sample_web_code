@@ -1,0 +1,6 @@
+{
+    "baseUrl": "http://localhost:8080",
+    "env": {
+        "apiServer": "https://mfp.metadd-sda.net/v1/tenants/GTO/"
+    }
+}

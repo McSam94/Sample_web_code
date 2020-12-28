@@ -10,6 +10,7 @@ const App = () => {
 
     return (
         <div
+            data-testid='app-container'
             className={cn('servicing-app', {
                 'theme--dark': isDarkMode,
                 'theme--light': !isDarkMode,

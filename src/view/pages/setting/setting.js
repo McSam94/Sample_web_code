@@ -44,7 +44,12 @@ const Setting = () => {
     return (
         <div className='about'>
             <Link to='/'>⬅ back</Link>
-            <Button primary className='about__darkmode about__element' onClick={toggleDarkMode}>
+            <Button
+                primary
+                data-testid='toggle-darkmode'
+                className='about__darkmode about__element'
+                onClick={toggleDarkMode}
+            >
                 {t('setting.dark-mode')}
             </Button>
 
@@ -60,7 +65,12 @@ const Setting = () => {
 
             <Loader isLoading={isLoading} />
 
-            <Button primary className='about__element' onClick={toastTest}>
+            <Button
+                primary
+                data-testid='toast-button'
+                className='about__element'
+                onClick={toastTest}
+            >
                 Toast
             </Button>
 
