@@ -74,7 +74,12 @@ const Setting = () => {
                 Toast
             </Button>
 
-            <Button primary className='about__logout about__element' onClick={logout}>
+            <Button
+                primary
+                data-testid='logout-button'
+                className='about__logout about__element'
+                onClick={logout}
+            >
                 {t('setting.logout')}
             </Button>
         </div>

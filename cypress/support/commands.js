@@ -27,3 +27,16 @@
 Cypress.Commands.add('getByTestId', (selector, ...args) => {
     return cy.get(`[data-testid=${selector}]`, ...args);
 });
+
+Cypress.Commands.add('login', (username, password) => {
+    const apiBase = Cypress.env('apiServer');
+    cy.intercept('POST', `${apiBase}authenticate`).as('loginUser');
+
+    cy.getByTestId('login-username').type(username);
+    cy.getByTestId('login-password').type(password);
+
+    cy.getByTestId('login-button').click();
+    cy.wait('@loginUser').then(() => {
+        cy.location('pathname').should('eq', '/');
+    });
+});
